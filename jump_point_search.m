@@ -140,8 +140,8 @@ function out = jump(grid, x, d, g, s)
     % Check if n is within grid or is an obstacle
     if n(0) < 0 || n(1) < 0 || ...
        n(0) > grid.GridSize(0) || ...
-       n(1) > grid.GridSize(1) ||
-       getOccupancy(grid, n, "grid");
+       n(1) > grid.GridSize(1) || ...
+       getOccupancy(grid, n, "grid")
        
         out = null();
         return
@@ -173,6 +173,7 @@ function out = jump(grid, x, d, g, s)
                 end
             end
         end
+    end
     % else jump recursively
     out = jump(n, d, s, g);
 end
