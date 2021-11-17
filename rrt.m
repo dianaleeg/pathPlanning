@@ -1,34 +1,33 @@
 
-%statespace
-ss = stateSpaceSE2;
+function [time_traveled, dist_traveled, map] = rrt(map_img, start_pos, end_pos)
 
-%statespace validaror
-sv = validatorOccupancyMap(ss);
+    %statespace
+    ss = stateSpaceSE2;
 
-%load example map
-load exampleMaps
-map = occupancyMap(simpleMap,10);
-sv.Map = map;
+    %statespace validaror
+    sv = validatorOccupancyMap(ss);
 
-%some validation distance threshold
-sv.ValidationDistance = 0.01;
+    %load example map
+    load map_img
+    map = occupancyMap(map_img,10);
+    sv.Map = map;
 
-%Update state space bounds to be the same as map limits.
-ss.StateBounds = [map.XWorldLimits;map.YWorldLimits; [-pi pi]];
+    %some validation distance threshold
+    sv.ValidationDistance = 0.01;
 
-%Create the path planner and increase max connection distance.
-planner = plannerRRT(ss,sv);
-planner.MaxConnectionDistance = 0.3;
+    %Update state space bounds to be the same as map limits.
+    ss.StateBounds = [map.XWorldLimits;map.YWorldLimits; [-pi pi]];
 
-%Set the start and goal states.
-start = [0.5,0.5,0];
-goal = [2.5,0.2,0];
+    %Create the path planner and increase max connection distance.
+    planner = plannerRRT(ss,sv);
+    planner.MaxConnectionDistance = 0.3;
 
-%Plan a path with default settings.
-rng(100,'twister'); % for repeatable result
-[pthObj,solnInfo] = plan(planner,start,goal);
+    %Plan a path with default settings.
+    rng(100,'twister'); % for repeatable result
+    [pthObj,solnInfo] = plan(planner,start_pos,end_pos);
+    
+    time_traveled = 0;
+    dist_traveled = 0;
+    map = 0;
 
-show(map)
-hold on
-plot(solnInfo.TreeData(:,1),solnInfo.TreeData(:,2),'.-'); % tree expansion
-plot(pthObj.States(:,1),pthObj.States(:,2),'r-','LineWidth',2) % draw path
+end
