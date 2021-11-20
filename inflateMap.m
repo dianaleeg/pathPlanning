@@ -4,8 +4,10 @@ function [inflated_occgrid] = inflateMap(occgrid, UAV_size, safety_factor)
 %   meters), and safety_factor is the amount to increase the size of the
 %   UAV by (x/1.0)
 
+UAV_diameter = UAV_size/2;
+
 inflated_occgrid = copy(occgrid);
-inflate(inflated_occgrid, ceil(safety_factor*UAV_size))
+inflate(inflated_occgrid, ceil(safety_factor*UAV_diameter))
 
 end
 
