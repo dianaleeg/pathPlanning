@@ -1,5 +1,5 @@
 
-function [time_traveled, dist_traveled, map] = rrt(map_img, start_pos, end_pos)
+function [time_traveled, dist_traveled, pthObj, solnInfo] = rrt(map, start_pos, end_pos)
 
     %statespace
     ss = stateSpaceSE2;
@@ -7,9 +7,7 @@ function [time_traveled, dist_traveled, map] = rrt(map_img, start_pos, end_pos)
     %statespace validaror
     sv = validatorOccupancyMap(ss);
 
-    %load example map
-    load map_img
-    map = occupancyMap(map_img,10);
+    %load map
     sv.Map = map;
 
     %some validation distance threshold
@@ -28,6 +26,5 @@ function [time_traveled, dist_traveled, map] = rrt(map_img, start_pos, end_pos)
     
     time_traveled = 0;
     dist_traveled = 0;
-    map = 0;
 
 end
