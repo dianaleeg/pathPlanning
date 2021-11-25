@@ -46,4 +46,5 @@ hold on
 UAVsize = 0.5;
 inflated_city_occgrid = inflateMap(city_occgrid, UAVsize, 1.25)
 [time_traveled, dist_traveled, pthObj, solnInfo] = rrt(inflated_city_occgrid, start, goal)
-plotSolvedPath(city_occgrid,solnInfo,pthObj,'City Occupancy Grid with Path','/figures/city_path_1.png');
+
+plotSolvedPath(city_occgrid,solnInfo,pthObj,'City Occupancy Grid with Path','/city_path.png');
