@@ -1,14 +1,21 @@
+close all
 clc
-clear
+clear all
+
 %% Test
 
-% grid = loadMap('city_map.png', 50);
-% start = [200, 1400];
-% goal = [800, 400];
-load exampleMaps.mat
-grid = binaryOccupancyMap(complexMap);
-start = [2,2];
-goal = [25,2];
+grid = loadMap('city_map.png', 50);
+start = [5, 5];
+goal = [25, 30];
+% load exampleMaps.mat
+% grid = binaryOccupancyMap(complexMap);
+% start = [2,2];
+% goal = [25,2];
+
+figure
+show(grid)
+hold on
+grid on
 path = make_path(grid, start, goal, start)
 
 
@@ -148,6 +155,7 @@ end
 %   
 function out = jump(grid, x, d, g, s)
     n = step_node(x, d);
+    
     % Check if n is within grid or is an obstacle
     if n(1) < grid.XLocalLimits(1) || ...
        n(2) < grid.YLocalLimits(1) || ...
@@ -252,6 +260,9 @@ end
 
 function path = make_path(grid, x, g, s)
     successors = identify_successors(grid, x, g, s);
+    
+    plot(x(1),x(2),'r.','MarkerSize',15)
+    drawnow
     for i = 1:size(successors,1)
         successor = successors(i, :)
         path = make_path(grid, successor, g, s);
