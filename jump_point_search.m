@@ -5,18 +5,21 @@ clear all
 %% Test
 
 grid = loadMap('city_map.png', 50);
-start = [20, 20];
-goal = [25, 30];
+start = [20, 25];
+goal = [30, 35];
 % load exampleMaps.mat
 % grid = binaryOccupancyMap(complexMap);
 % start = [2,2];
 % goal = [25,2];
 
+path = [];
+
 figure
 show(grid)
 hold on
 grid on
-path = make_path(grid, start, goal, start)
+
+make_path(grid, start, goal, start)
 
 
 % Function distance
@@ -159,10 +162,10 @@ function out = jump(grid, x, d, g, s)
     plot(n(1),n(2),'b.','MarkerSize',5)
     %drawnow
     % Check if n is within grid or is an obstacle
-    if n(1) < grid.XLocalLimits(1) || ...
-       n(2) < grid.YLocalLimits(1) || ...
-       n(1) > grid.XLocalLimits(2) || ...
-       n(2) > grid.YLocalLimits(2) || ...
+    if n(1) <= grid.XLocalLimits(1) || ...
+       n(2) <= grid.YLocalLimits(1) || ...
+       n(1) >= grid.XLocalLimits(2) || ...
+       n(2) >= grid.YLocalLimits(2) || ...
        getOccupancy(grid, n) == occupied()
 %         fprintf('null \n')
         
@@ -263,18 +266,37 @@ end
 % Outputs:
 %   * successors of x
 
-function path = make_path(grid, x, g, s)
+function make_path(grid, x, g, s)
+    global path
     successors = identify_successors(grid, x, g, s);
     
     plot(x(1),x(2),'g.','MarkerSize',15)
     drawnow
-    for i = 1:size(successors,1)
-        successor = successors(i, :)
-        path = make_path(grid, successor, g, s);
-        has_goal = intersect(path, g,'rows');
-        if ~isempty(has_goal)
-            path = [path; successors(i, :)];
-            return
+    
+    found_successor = false;
+    i = 1;
+
+    %for i = 1:size(successors,1)
+    while found_successor == false && i <= size(successors,1)
+        if ~isempty(path)
+            c = ismember(path,successors(i,:),'row');
+        else
+            path = s;
+            c = 0;
+        end
+        
+        if ~any(c(:))
+            successor = successors(i,:);
+            found_successor = true;
+        else
+            successor = successors(1,:);
+        end
+        
+        i = i+1;
+        path = [path; successor]
+        
+        if (x ~= g) 
+            make_path(grid, successor, g, s);
         end
     end
     path = null();
