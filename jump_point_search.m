@@ -5,7 +5,7 @@ clear all
 %% Test
 
 grid = loadMap('city_map.png', 50);
-start = [5, 5];
+start = [20, 20];
 goal = [25, 30];
 % load exampleMaps.mat
 % grid = binaryOccupancyMap(complexMap);
@@ -74,7 +74,7 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
     straight_move = px(1) == x(1) || px(2) == x(2);
     for i = drange(x(1)-1:x(1)+1)
         for j = drange(x(2)-1:x(2)+1)
-            n = getOccupancy(grid, [i,j], 'grid');
+            n = getOccupancy(grid, [i,j]);
             % i, j locations within neighbor matrix 
             n_i = i - x(1) + 2;
             n_j = j - x(2) + 2;
@@ -103,8 +103,8 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 blockable_h = (i ~= px(1) && abs(j - px(2)) == 2);
                 blockable_v = (j ~= px(2) && abs(i - px(1)) == 2);
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,2], 'grid')) ...
-                       || (blockable_v && getOccupancy(grid, [2,j], 'grid'));
+                blocked = (blockable_h && getOccupancy(grid, [i,2])) ...
+                       || (blockable_v && getOccupancy(grid, [2,j]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -123,8 +123,8 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 blockable_h = (i == px(1) && abs(j - px(2)) == 2);
                 blockable_v = (j == px(2) && abs(i - px(1)) == 2); %TODO check this
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,2], 'grid')) ...
-                       || (blockable_v && getOccupancy(grid, [2,j], 'grid'));
+                blocked = (blockable_h && getOccupancy(grid, [i,2])) ...
+                       || (blockable_v && getOccupancy(grid, [2,j]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -156,13 +156,18 @@ end
 function out = jump(grid, x, d, g, s)
     n = step_node(x, d);
     
+    plot(n(1),n(2),'b.','MarkerSize',5)
+    %drawnow
     % Check if n is within grid or is an obstacle
     if n(1) < grid.XLocalLimits(1) || ...
        n(2) < grid.YLocalLimits(1) || ...
        n(1) > grid.XLocalLimits(2) || ...
        n(2) > grid.YLocalLimits(2) || ...
-       getOccupancy(grid, n, 'grid') == occupied()
+       getOccupancy(grid, n) == occupied()
 %         fprintf('null \n')
+        
+        plot(n(1),n(2),'r.','MarkerSize',10)
+        %drawnow
         out = null();
         
         return
@@ -261,12 +266,12 @@ end
 function path = make_path(grid, x, g, s)
     successors = identify_successors(grid, x, g, s);
     
-    plot(x(1),x(2),'r.','MarkerSize',15)
+    plot(x(1),x(2),'g.','MarkerSize',15)
     drawnow
     for i = 1:size(successors,1)
         successor = successors(i, :)
         path = make_path(grid, successor, g, s);
-        has_goal =intersect(path, g,'rows');
+        has_goal = intersect(path, g,'rows');
         if ~isempty(has_goal)
             path = [path; successors(i, :)];
             return
