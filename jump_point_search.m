@@ -244,6 +244,8 @@ function successors = identify_successors(grid, x, g, s)
             d = [i-2, j-2];
             if d(1) == 0 && d(2) == 0
                 continue
+            elseif sign(s(1) - x(1)) == d(1) && sign(s(2) - x(2)) == d(2)
+                continue
             elseif neighbors(i, j) == unoccupied() || neighbors(i, j) == forced()
 %                 fprintf(' jumping \n')
                 n = jump(grid, x, d, g, s);
@@ -296,7 +298,7 @@ function make_path(grid, x, g, s)
         path = [path; successor]
         
         if (x ~= g) 
-            make_path(grid, successor, g, s);
+            make_path(grid, successor, g, x);
         end
     end
     path = null();
