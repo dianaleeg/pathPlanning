@@ -5,9 +5,9 @@ clear all
 %% Test
 
 grid = loadMap('city_map.png', 50);
-start = [20, 25];
-goal = [30, 35];
-% load exampleMaps.mat
+start = [30, 35];
+goal = [5, 5];
+% load exampleMaps.mats
 % grid = binaryOccupancyMap(complexMap);
 % start = [2,2];
 % goal = [25,2];
@@ -295,10 +295,10 @@ function [path, iterations] = make_path(grid, x, g, s, iterations)
         end
         
         i = i+1;
+        path = [path; successor]
         
-        if (x ~= g) 
+        if (all(successor ~= g)) 
             [path, iterations] = make_path(grid, successor, g, x, iterations+1);
         end
     end
-    path = null();
 end
