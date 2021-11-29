@@ -5,12 +5,12 @@ clear all
 %% Test
 
 grid = loadMap('city_map.png', 50);
-start = [30, 35];
-goal = [5, 5];
-% load exampleMaps.mats
+start = [40, 45];
+goal = [2, 2];
+% load exampleMaps.mat
 % grid = binaryOccupancyMap(complexMap);
-% start = [2,2];
-% goal = [25,2];
+% start = [25,35];
+% goal = [2,2];
 
 path = [];
 
@@ -18,9 +18,12 @@ figure
 show(grid)
 hold on
 grid on
+
+plot(start(1),start(2),'g.','MarkerSize',15)
+drawnow
+
 iterations = 1;
 [path, iterations] = make_path(grid, start, goal, start, iterations+1)
-
 
 % Function distance
 % Inputs:
@@ -271,10 +274,7 @@ end
 function [path, iterations] = make_path(grid, x, g, s, iterations)
     global path
     successors = identify_successors(grid, x, g, s);
-    
-    plot(x(1),x(2),'g.','MarkerSize',15)
-    drawnow
-    
+       
     found_successor = false;
     i = 1;
 
@@ -297,8 +297,15 @@ function [path, iterations] = make_path(grid, x, g, s, iterations)
         i = i+1;
         path = [path; successor]
         
-        if (all(successor ~= g)) 
+        plot(successor(1),successor(2),'g.','MarkerSize',15)
+        drawnow
+
+        if (all(successor ~= x)) 
             [path, iterations] = make_path(grid, successor, g, x, iterations+1);
         end
+    end
+    
+    if (path(end,:) ~= g)
+        warning('Goal not achievable! Stopping...')
     end
 end
