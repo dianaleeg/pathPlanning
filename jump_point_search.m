@@ -295,10 +295,9 @@ function [path, iterations] = make_path(grid, x, g, s, iterations)
         end
         
         i = i+1;
-        [path, iterations] = make_path(grid, successor, g, s, iterations+1);
         
         if (x ~= g) 
-            make_path(grid, successor, g, x, iterations+1);
+            [path, iterations] = make_path(grid, successor, g, x, iterations+1);
         end
     end
     path = null();
