@@ -18,8 +18,8 @@ figure
 show(grid)
 hold on
 grid on
-
-make_path(grid, start, goal, start)
+iterations = 1;
+[path, iterations] = make_path(grid, start, goal, start, iterations+1)
 
 
 % Function distance
@@ -268,7 +268,7 @@ end
 % Outputs:
 %   * successors of x
 
-function make_path(grid, x, g, s)
+function [path, iterations] = make_path(grid, x, g, s, iterations)
     global path
     successors = identify_successors(grid, x, g, s);
     
@@ -295,10 +295,10 @@ function make_path(grid, x, g, s)
         end
         
         i = i+1;
-        path = [path; successor]
+        [path, iterations] = make_path(grid, successor, g, s, iterations+1);
         
         if (x ~= g) 
-            make_path(grid, successor, g, x);
+            make_path(grid, successor, g, x, iterations+1);
         end
     end
     path = null();
