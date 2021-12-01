@@ -8,9 +8,9 @@ a_starplanner("city_map.png", start, goal)
 
 function a_starplanner(map_img, start_pos, end_pos)
     
-    %map_img = imread('city_map.png');
-    grid = loadMap('city_map.png', 50);
+    grid = loadMap(map_img, 50);
     planner = plannerAStarGrid(grid);
+    planner.Map = grid;
 
     plan(planner,start_pos, end_pos);
     
