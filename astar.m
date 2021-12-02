@@ -1,23 +1,13 @@
-function [time_traveled, dist_traveled, pthObj, solnInfo] = a_star(map, start_pos, end_pos)
-
-    %statespace
-    ss = stateSpaceSE2;
-
-    %statespace validaror
-    sv = validatorOccupancyMap(ss);
-
-    %load map
-    sv.Map = map;
-
-    %some validation distance threshold
-    sv.ValidationDistance = 0.01;
-
-    %Update state space bounds to be the same as map limits.
-    ss.StateBounds = [map.XWorldLimits;map.YWorldLimits; [-pi pi]];
+function [time_traveled, dist_traveled, new_pthObj, solnInfo] = astar(map, start_pos, end_pos)
     
+    %remap start and goal
+    new_start_pos(1) = map.GridSize(2) - start_pos(2);
+    new_start_pos(2) = start_pos(1);
+    new_end_pos(1) = map.GridSize(2) - end_pos(2);
+    new_end_pos(2) = end_pos(1);
+
     %Create the path planner and increase max connection distance.
-    planner = plannerAStarGrid(ss,sv);
-    planner.MaxConnectionDistance = 0.3;
+    planner = plannerAStarGrid(map);
 
     %Plan a path with default settings.
     rng(100,'twister'); % for repeatable result
@@ -26,10 +16,13 @@ function [time_traveled, dist_traveled, pthObj, solnInfo] = a_star(map, start_po
     start_time = clock;
     
     %call planner
-    [pthObj,solnInfo] = plan(planner,start_pos,end_pos);
+    [pthObj,solnInfo] = plan(planner,new_start_pos,new_end_pos);
     
     %stop timer
     end_time = clock;
+    
+    new_pthObj(:,1) = pthObj(:,2);
+    new_pthObj(:,2) = map.GridSize(2) - pthObj(:,1);
     
     time_traveled = end_time - start_time;
     dist_traveled = 0;

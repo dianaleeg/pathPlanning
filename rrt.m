@@ -11,7 +11,7 @@ function [time_traveled, dist_traveled, pthObj, solnInfo] = rrt(map, start_pos, 
     sv.Map = map;
 
     %some validation distance threshold
-    sv.ValidationDistance = 0.01;
+    sv.ValidationDistance = 0.1;
 
     %Update state space bounds to be the same as map limits.
     ss.StateBounds = [map.XWorldLimits;map.YWorldLimits; [-pi pi]];

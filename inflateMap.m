@@ -7,7 +7,7 @@ function [inflated_occgrid] = inflateMap(occgrid, UAV_size, safety_factor)
 UAV_radius = UAV_size/2;
 
 inflated_occgrid = copy(occgrid);
-inflate(inflated_occgrid, ceil(safety_factor*UAV_radius))
+inflate(inflated_occgrid, ceil(safety_factor*UAV_radius),'grid')
 
 end
 
