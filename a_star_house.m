@@ -52,4 +52,4 @@ if not(isfolder('figures'))
     mkdir('figures')
 end
 
-plotSolvedPath(house_occgrid,solnInfo,pthObj,'House Occupancy Grid with Path','/figures/house_path_1.png');
+plotSolvedPath(house_occgrid,solnInfo,pthObj,'House Occupancy Grid with Path','/figures/a_star_house_path_1.png');
