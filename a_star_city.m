@@ -45,7 +45,7 @@ hold on
 %%
 UAVsize = 0.5;
 inflated_city_occgrid = inflateMap(city_occgrid, UAVsize, 1.25)
-[time_traveled, dist_traveled, pthObj, solnInfo] = a_star(inflated_city_occgrid, start, goal)
+[time_traveled, dist_traveled, pthObj, solnInfo] = astar(inflated_city_occgrid, start, goal)
 
 
 if not(isfolder('figures'))
