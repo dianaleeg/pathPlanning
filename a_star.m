@@ -1,36 +1,32 @@
-function [time_traveled, dist_traveled, map] = a_star(map_img, start_pos, end_pos)
+close all
+clc
+clear all
 
-    cost_from_start_to_next_node = 0;
-    est_cost_from_next_node_to_last_node= 0;
-    calc_cost = cost_from_start_to_next_node + est_cost_from_next_node_to_last_node;
-    
-    %map_img = imread('city_map.png');
-    grid = loadMap('city_map.png', 50);
-    start_pos = [1,1];
-    end_pos = [10,1];
-    
-    %start timer after variables are set and map is loaded
-    start_time = clock;
+start = [40, 45];
+goal = [2, 2];
+a_starplanner('city_map.png', start, goal)
 
-    opened = zeros(50,50); % needs to be the list of all nodes to visit
-    closed = zeros(50,50); % will populate as nodes are visited
+function a_starplanner(map_img, start_pos, end_pos)
     
-    opened(1) = start_pos(1), start_pos(2)
-    opened
+    city_occgrid = loadMap(map_img, 50);
+    show(city_occgrid)
     
-    %start timer once variables are set up and map loaded
-    start_time = clock; 
-    while size(opened) > 0
-        
-        %keep running algo
-        %next_node = min(opened[]) % open node with least cost
-        
-    end
+    costmap = vehicleCostmap(city_occgrid)
     
-    %end timer
-    end_time = clock;
     
-    %take elapsed time
-    time_traveled = end_time - start_time
+    
+    UAVdims = vehicleDimensions(0.5,0.5, 'FrontOverhang',0.1,'RearOverhang',0.1); 
+    numCircles = 1;
+    inflationRadius = 0.5;
+    ccConfig = inflationCollisionChecker(UAVdims, numCircles,'InflationRadius',inflationRadius);
+    plot(ccConfig)
+
+    planner = plannerAStarGrid(city_occgrid);
+    planner.Map = city_occgrid;
+
+    plan(planner,start_pos, end_pos);
+    
+    figure(2)
+    show(planner)
 
 end

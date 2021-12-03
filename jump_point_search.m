@@ -5,12 +5,17 @@ clear all
 %% Test
 
 grid = loadMap('city_map.png', 50);
+
 goal = [20, 25];
 start = [30, 35];
+
+% start = [40, 45];
+% goal = [2, 2];
+
 % load exampleMaps.mat
 % grid = binaryOccupancyMap(complexMap);
-% start = [2,2];
-% goal = [25,2];
+% start = [25,35];
+% goal = [2,2];
 
 path = [];
 
@@ -19,8 +24,11 @@ show(grid)
 hold on
 grid on
 
-make_path(grid, start, goal, start)
+plot(start(1),start(2),'g.','MarkerSize',15)
+drawnow
 
+nodes_visited = 0;
+[path, nodes_visited] = make_path(grid, start, goal, start, nodes_visited)
 
 % Function dist
 % Inputs:
@@ -156,9 +164,8 @@ end
 %   * s: 1x2 mat representing the start node (x,y)
 % Outputs:
 %   
-function out = jump(grid, x, d, g, s)
+function [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited)
     n = step_node(x, d);
-    
     plot(n(1),n(2),'b.','MarkerSize',5)
     %drawnow
     % Check if n is within grid or is an obstacle
@@ -188,14 +195,14 @@ function out = jump(grid, x, d, g, s)
     elseif d(1) ~= 0 && d(2) ~= 0
         di = [d(1), 0];
 %         fprintf('diagnol special jump\n')
-        jump_diag = jump(grid, n, di, g, s);
+        [jump_diag, nodes_visited] = jump(grid, n, di, g, s, nodes_visited+1);
         if ~isequal(jump_diag, null())
             out = n;
             return
         end
         di = [0, d(2)];
 %         fprintf('diagnol special jump 2\n')
-        jump_diag = jump(grid, n, di, g, s);
+        [jump_diag, nodes_visited] = jump(grid, n, di, g, s, nodes_visited+1);
         if ~isequal(jump_diag, null())
             out = n;
             return
@@ -209,10 +216,10 @@ function out = jump(grid, x, d, g, s)
 %                 if isequal(di, [0, 0]) || isequal(x, step_node(n, di)) 
 %                     continue
 %                 end
-%                 jump1 = jump(grid, n, di, g, s);
+%                 [jump1, nodes_visited] = jump(grid, n, di, g, s, nodes_visited+1);
 %                 if ~isequal(jump1, null()) 
 %                     fprintf('diagnol special jump\n')
-%                     jump2 = jump(grid, jump1, di, g, s);
+%                     [jump2, nodes_visited] = jump(grid, jump1, di, g, s, nodes_visited+1);
 %                     if ~isequal(jump2, null())
 %                         out = n;
 %                         fprintf('diagnol special \n')
@@ -224,7 +231,7 @@ function out = jump(grid, x, d, g, s)
     end
     % else jump recursively
 %     fprintf('recursive \n')
-    out = jump(grid, n, d, g, s);
+    [out, nodes_visited] = jump(grid, n, d, g, s, nodes_visited+1);
 end
 
 %% Identify Successors
@@ -236,7 +243,7 @@ end
 % Outputs:
 %   * successors of x
 
-function successors = identify_successors(grid, x, g, s)
+function [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited)
     successors = [];
     neighbors = prune_neighbors(grid, x, x, g);
     for i = drange(1:3)
@@ -248,7 +255,7 @@ function successors = identify_successors(grid, x, g, s)
                 continue
             elseif neighbors(i, j) == unoccupied() || neighbors(i, j) == forced()
 %                 fprintf(' jumping \n')
-                n = jump(grid, x, d, g, s);
+                [n, nodes_visited] = jump(grid, x, d, g, s, nodes_visited+1);
                 if ~isequal(n, null())
                     successors = [successors; n];
                 end
@@ -268,13 +275,10 @@ end
 % Outputs:
 %   * successors of x
 
-function make_path(grid, x, g, s)
+function [path, nodes_visited] = make_path(grid, x, g, s, nodes_visited)
     global path
-    successors = identify_successors(grid, x, g, s);
-    
-    plot(x(1),x(2),'g.','MarkerSize',15)
-    drawnow
-    
+    [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
+       
     found_successor = false;
     i = 1;
 
@@ -297,9 +301,15 @@ function make_path(grid, x, g, s)
         i = i+1;
         path = [path; successor]
         
-        if (x ~= g) 
-            make_path(grid, successor, g, x);
+        plot(successor(1),successor(2),'g.','MarkerSize',15)
+        drawnow
+
+        if (all(successor ~= x)) 
+            [path, nodes_visited] = make_path(grid, successor, g, x, nodes_visited);
         end
     end
-    path = null();
+    
+    if (path(end,:) ~= g)
+        warning('Goal not achievable! Stopping...')
+    end
 end

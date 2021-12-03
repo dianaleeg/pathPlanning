@@ -1,7 +1,7 @@
 %% Path Planning for Drone
-% Move drone using RRT Planner
+% Move drone using A* Planner
 %% 
-% Load map of house 
+% Load map of city 
 
 clear all
 close all
@@ -17,11 +17,11 @@ goal = [50,60,0];
 
 %%
 UAVsize = 0.2;
-inflated_city_occgrid = inflateMap(city_occgrid, UAVsize, 1.0)
-[time_traveled, dist_traveled, pthObj, solnInfo] = rrt(inflated_city_occgrid, start, goal)
+inflated_city_occgrid = inflateMap(city_occgrid, UAVsize, 1.0);
+[time_traveled, dist_traveled, pthObj, solnInfo] = astar(inflated_city_occgrid, start, goal);
 
 if not(isfolder('figures'))
     mkdir('figures')
 end
     
-plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,'RRT - City Occupancy Grid with Path','/figures/rrt_city_path_1.png');
+plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,'A* - City Occupancy Grid with Path','/figures/a_star_city_path_1.png');

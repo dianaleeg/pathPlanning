@@ -7,8 +7,12 @@ figure
 hold on
 show(occgrid)
 title(plot_title)
-plot(solnInfo.TreeData(:,1),solnInfo.TreeData(:,2),'.-');
-plot(pthObj.States(:,1),pthObj.States(:,2),'r-','LineWidth',2)
+try
+    plot(solnInfo.TreeData(:,1),solnInfo.TreeData(:,2),'.-');
+    plot(pthObj.States(:,1),pthObj.States(:,2),'r-','LineWidth',2)
+catch
+    plot(pthObj(:,1),pthObj(:,2),'r-','LineWidth',2)
+end
 saveas(gcf,[pwd file_path])
 
 end
