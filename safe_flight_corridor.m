@@ -19,11 +19,17 @@ close all
 
 %% Test
 grid = loadMap('city_map.png', 50);
-% goal = [30, 25];
-% start = [20, 35];
+goal = [20, 25];
+start = [30, 35];
+
+goal = [30, 25];
+start = [20, 35];
 
 goal = [20, 24];
 start = [14, 24];
+
+% goal = [24, 20];
+% start = [24, 30];
 
 show(grid)
 hold on
@@ -47,7 +53,7 @@ R_l_to_w_3 = [[cos(theta), -sin(theta), 0]; ...
      [sin(theta), cos(theta), 0];
      [0, 0, 1]];
  
-R_w_to_l = [[cos(theta), sin(theta), 0]; ...
+R_w_to_l_3 = [[cos(theta), sin(theta), 0]; ...
      [-sin(theta), cos(theta), 0];
      [0, 0, 1]]; % rotation matrix of world frame to line segment frame
  
@@ -93,11 +99,28 @@ scatter(o_closest_world(1), o_closest_world(2), 'white');
 % TODO fix this by rotating point to world coordinates then measuring
 
 % Solve for ellipse height use pythagorean theorem
-point_to_line = abs(point_to_line_dist(p1, p2, o_closest_world));
+x = [0, grid.XWorldLimits(2)];
+x1 = o_closest_world(1); % Specify your starting x
+y1 = o_closest_world(2);  % Specify your starting y
+T = [[1, 0, x1];
+    [0, 1, y1];
+    [0, 0, 1]];
+T_neg = [[1, 0, -x1];
+        [0, 1, -y1];
+        [0, 0, 1]];
+perpendicular = T * R_w_to_l_3 * T_neg * [x; y1 * ones(size(x)); ones(size(x))];
+plot(perpendicular(1,:), perpendicular(2,:))
+
+[intersect_x, intersect_y] = polyxpoly([p1(1), p2(1)], [p1(2), p2(2)], perpendicular(1,:), perpendicular(2,:));
+point_to_line = dist([intersect_x, intersect_y], o_closest_world);
+% point_to_line = abs(point_to_line_dist(p1, p2, o_closest_world));
 o_y = midpoint(2) + point_to_line;
 o_x = midpoint(1) + sqrt((point_to_line^2) + (o_closest_dist^2));
 height = sqrt(abs(((o_y - midpoint(2))^2) / (1 - (((o_x - midpoint(1))^2) / ((len/2)^2)))));
 
+
+
+% Define ellispe
 x = linspace(midpoint(1)-(len/2), midpoint(1)+(len/2));
 y_pos = midpoint(2) + sqrt((1 - (((x-midpoint(1)).^2) / ((len/2)^2))) * height);
 y_neg = midpoint(2) - sqrt((1 - (((x-midpoint(1)).^2) / ((len/2)^2))) * height);
@@ -114,7 +137,6 @@ T_neg = [[1, 0, -midpoint(1)];
 ellipse = T * R_l_to_w_3 * T_neg * [x; y_pos; ones(size(x))];
 ellipse_neg = T * R_l_to_w_3 * T_neg * [x; y_neg; ones(size(x))];
 
-
 plot(ellipse(1,:), ellipse(2,:))
 plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
@@ -122,12 +144,12 @@ plot(ellipse_neg(1,:), ellipse_neg(2,:))
 syms x_sym
 y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
 y_dot = diff(y);
-slope = vpa(subs(y_dot,x_sym,o_world));
+slope = vpa(subs(y_dot,x_sym,o_world(1)));
 
 x = linspace(0, grid.XWorldLimits(2));
 x1 = o_closest_world(1); % Specify your starting x
 y1 = o_closest_world(2);  % Specify your starting y
-y = slope(2)*(x - x1) + y1; % TODO choose positive or negative slope
+y = -slope*(x - x1) + y1; % TODO choose positive or negative slope
 T = [[1, 0, x1];
     [0, 1, y1];
     [0, 0, 1]];
@@ -135,8 +157,33 @@ T_neg = [[1, 0, -x1];
     [0, 1, -y1];
     [0, 0, 1]];
 tangent = T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))];
-% plot(tangent(1,:),tangent(2,:)); % plot the graph, and store line reference in a variable.
-plot(x, y)
+plot(tangent(1,:),tangent(2,:), 'b'); % plot the graph, and store line reference in a variable.
+% plot(x, y,'r')
+
+% tangent plane to the ellipsoid at this point creates a half space
+for i = 1:bb_size(1)
+    bb_point = bb_world(i, :);
+    x = bb_point(1);
+    x1 = o_closest_world(1); % Specify your starting x
+    y1 = o_closest_world(2);  % Specify your starting y
+    y = -slope*(x - x1) + y1; % TODO choose positive or negative slope
+    T = [[1, 0, x1];
+        [0, 1, y1];
+        [0, 0, 1]];
+    T_neg = [[1, 0, -x1];
+        [0, 1, -y1];
+        [0, 0, 1]];
+    tangent_point = double(T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))]);
+    if tangent_point(2) >= midpoint(2) && bb_point(2) >= tangent_point(2)
+        bb_occupancy(i) = 0;
+    elseif tangent_point(2) < midpoint(2) && bb_point(2) <= tangent_point(2)
+        bb_occupancy(i) = 0;
+    else
+        scatter(bb_point(1), bb_point(2), 'red');
+    end
+end
+
+
 
 % Helper Functions
 function d = dist(p1, p2)
