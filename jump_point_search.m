@@ -5,8 +5,8 @@ clear all
 %% Test
 
 grid = loadMap('city_map.png', 50);
-start = [20, 25];
-goal = [30, 35];
+goal = [20, 25];
+start = [30, 35];
 % load exampleMaps.mat
 % grid = binaryOccupancyMap(complexMap);
 % start = [2,2];
@@ -22,14 +22,14 @@ grid on
 make_path(grid, start, goal, start)
 
 
-% Function distance
+% Function dist
 % Inputs:
 %   * p1: point 1 [x, y]
 %   * p2: point 2 [x, y]
 % Output:
 %   Straight line distance between p1 and p2
-function dist = distance(p1, p2)
-    dist = sqrt(((p1(1) - p2(1))^2) + ((p1(2) - p2(2))^2));
+function d = dist(p1, p2)
+    d = sqrt(((p1(1) - p2(1))^2) + ((p1(2) - p2(2))^2));
 end
 
 %% Pruning Rules
@@ -97,8 +97,8 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
             % Straight Move from px to x
             elseif straight_move
                 % Get path lengths
-                px_to_n = distance(px, [i, j]);
-                px_to_x_to_n = distance(px, x) + distance(x, [i, j]);
+                px_to_n = dist(px, [i, j]);
+                px_to_x_to_n = dist(px, x) + dist(x, [i, j]);
                     
                 prune =  px_to_n <= px_to_x_to_n;
                 
@@ -117,8 +117,8 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
             % Diagonal Move from px to x
             else
                  % Get path lengths
-                px_to_n = distance(px, [i, j]);
-                px_to_x_to_n = distance(px, x) + distance(x, [i, j]);
+                px_to_n = dist(px, [i, j]);
+                px_to_x_to_n = dist(px, x) + dist(x, [i, j]);
                     
                 prune =  px_to_n < px_to_x_to_n;
                 
