@@ -19,11 +19,11 @@ close all
 
 %% Test
 grid = loadMap('city_map.png', 50);
-goal = [20, 25];
-start = [30, 35];
+% goal = [30, 25];
+% start = [20, 35];
 
-% goal = [14, 24];
-% start = [20, 24];
+goal = [20, 24];
+start = [14, 24];
 
 show(grid)
 hold on
@@ -92,13 +92,11 @@ scatter(o_closest_world(1), o_closest_world(2), 'white');
 
 % TODO fix this by rotating point to world coordinates then measuring
 
-% Solve for ellipse height
+% Solve for ellipse height use pythagorean theorem
 point_to_line = abs(point_to_line_dist(p1, p2, o_closest_world));
 o_y = midpoint(2) + point_to_line;
 o_x = midpoint(1) + sqrt((point_to_line^2) + (o_closest_dist^2));
 height = sqrt(abs(((o_y - midpoint(2))^2) / (1 - (((o_x - midpoint(1))^2) / ((len/2)^2)))));
-
-
 
 x = linspace(midpoint(1)-(len/2), midpoint(1)+(len/2));
 y_pos = midpoint(2) + sqrt((1 - (((x-midpoint(1)).^2) / ((len/2)^2))) * height);
@@ -122,16 +120,23 @@ plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
 % Find line tangent to ellipse at point o
 syms x_sym
-y = midpoint(2) + sqrt((1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
+y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
 y_dot = diff(y);
 slope = vpa(subs(y_dot,x_sym,o_world));
 
-x = linspace(0, ; % Defines the domain as [-15,25] with a refinement of 0.25
+x = linspace(0, grid.XWorldLimits(2));
 x1 = o_closest_world(1); % Specify your starting x
 y1 = o_closest_world(2);  % Specify your starting y
-y = slope(1)*(x - x1) + y1;
-plot(x,y); % plot the graph, and store line reference in a variable.
-
+y = slope(2)*(x - x1) + y1; % TODO choose positive or negative slope
+T = [[1, 0, x1];
+    [0, 1, y1];
+    [0, 0, 1]];
+T_neg = [[1, 0, -x1];
+    [0, 1, -y1];
+    [0, 0, 1]];
+tangent = T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))];
+% plot(tangent(1,:),tangent(2,:)); % plot the graph, and store line reference in a variable.
+plot(x, y)
 
 % Helper Functions
 function d = dist(p1, p2)
