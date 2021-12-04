@@ -4,9 +4,9 @@ clear all
 
 %% Test
 
-grid = loadMap('city_map.png', 50);
+[scaled_grid, grid] = loadMap('city_map.png', 50);
 
-goal = [20, 25];
+goal = [5, 5];
 start = [30, 35];
 
 % start = [40, 45];
