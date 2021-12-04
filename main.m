@@ -60,6 +60,11 @@ plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,'RRT - City Occupancy Grid 
 plotSolvedPath(house_occgrid_unscaled,solnInfo,pthObj,'RRT - House Occupancy Grid with Path','/figures/rrt_house_path_1.png');
 
 % A*
+[dist_traveled, pthObj, solnInfo] = astar(inflated_city_occgrid,  [start_city 0], [goal_city 0]);
+plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,'A* - City Occupancy Grid with Path','/figures/a_star_city_path_1.png');
+
+[dist_traveled, pthObj, solnInfo] = astar(inflated_city_occgrid,  [start_house 0], [goal_house 90]);
+plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,'A* - City Occupancy Grid with Path','/figures/a_star_house_path_1.png');
 
 % JPS & SFC
 

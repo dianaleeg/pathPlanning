@@ -1,4 +1,4 @@
-function [time_traveled, dist_traveled, new_pthObj, solnInfo] = astar(map, start_pos, end_pos)
+function [dist_traveled, new_pthObj, solnInfo] = astar(map, start_pos, end_pos)
     
     %remap start and goal
     new_start_pos(1) = map.GridSize(2) - start_pos(2);
@@ -24,7 +24,6 @@ function [time_traveled, dist_traveled, new_pthObj, solnInfo] = astar(map, start
     new_pthObj(:,1) = pthObj(:,2);
     new_pthObj(:,2) = map.GridSize(2) - pthObj(:,1);
     
-    time_traveled = end_time - start_time;
     dist_traveled = 0;
 
 end
