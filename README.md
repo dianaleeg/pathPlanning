@@ -6,3 +6,4 @@ MATLAB Toolboxes Needed:
 
 1) Parallel Computing Toolbox
 2) Automated Driving Toolbox
+3) Symbolic Math Toolbox
