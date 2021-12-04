@@ -1,5 +1,4 @@
-function [Ps]=MinimumSnapGenerator(T,Pos)   
-
+function [Ps] = MinimumSnapGenerator(T,Pos)   
 
 v0=[0,0]; % Initial velocity 
 vf=[0,0]; % Final velocity 
@@ -70,6 +69,7 @@ end
 PPs=vpa(PPs);  % Minimal Jerk Trajectory ... Position ... Each COLUMN represents one of the trajectories between two points ... Number of columns = n
 VVs=vpa(diff(PPs,t)); % Minimal Jerk Trajectory ... Velocity ... Each COLUMN represents one of the trajectories between two points ... Number of columns = n
 AAs=vpa(diff(VVs,t)); % Minimal Jerk Trajectory ... Acceleration ... Each COLUMN represents one of the trajectories between two points ... Number of columns = n
+
 POSs=piecewise(T(1)<=t<T(2),PPs(:,1));
 if n>1
 for i=2:1:n
@@ -91,11 +91,10 @@ end
  
 t=T(1):1e-2:T(n+1);
 Ps=double(subs(POSs)); %POSITION trajectory (NUMERICAL VALUES AFTER SUB TIME) ... REMOVE the semicolon if you want to display 
-Vs=double(subs(VELs)); %VELOCITY trajectory (NUMERICAL VALUES AFTER SUB TIME) ... REMOVE the semicolon if you want to display
-As=double(subs(ACCs)); %ACCELERATION trajectory (NUMERICAL VALUES AFTER SUB TIME) ... REMOVE the semicolon if you want to display
+% Vs=double(subs(VELs)); %VELOCITY trajectory (NUMERICAL VALUES AFTER SUB TIME) ... REMOVE the semicolon if you want to display
+% As=double(subs(ACCs)); %ACCELERATION trajectory (NUMERICAL VALUES AFTER SUB TIME) ... REMOVE the semicolon if you want to display
 
 %% Ploting
-
 % figure('WindowState', 'maximized')
 % for i=1:1:columns
 % subplot(columns,1,i)
