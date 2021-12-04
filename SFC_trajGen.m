@@ -1,4 +1,4 @@
-function path = SFC_trajGen(start, goal, poly_list)
+function [min_path, min_path_length] = SFC_trajGen(start, goal, poly_list)
 %SFC_TRAJGEN Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -18,7 +18,7 @@ for i = 1:size(poly_list,2)
         intersections{i-1} = intersect(polys{i},polys{i-1});
         plot(intersections{i-1},'FaceColor','green','FaceAlpha',1)
         
-        intersect_grids{i-1} = gridPoly(intersections{i-1},5);
+        intersect_grids{i-1} = gridPoly(intersections{i-1},2);
         for j = 1:length(intersect_grids{i-1})
             plot(intersect_grids{i-1}(j,1),intersect_grids{i-1}(j,2),'b.');
         end
@@ -48,27 +48,34 @@ while incrementing == true
        end
         plot(nodes{i}(node_count,1),nodes{i}(node_count,2),'r.')
         drawnow
-        plot(nodes{i}(node_count,1),nodes{i}(node_count,2),'b.')
-        drawnow
-
     end
     node_count = node_count + 1;
 end
 
-Pos = start;
-for k = 1:size(intersections,2)
-   Pos(k+1,:) = intersect_grids{k}(1,:); 
+min_path_length = inf;
+
+for i = 1:length(nodes{1})
+    Pos = start;
+    for j = 1:size(intersections,2)
+        Pos(j+1,:) = nodes{j}(i,:); 
+    end
+    Pos(end+1,:) = goal;
+
+    T = 0:1:size(Pos,1)-1; % Time vector
+
+    [Ps] = MinimumSnapGenerator(T,Pos);
+    path = Ps(:,1:end-1)';
+    plot(path(:,1),path(:,2),'r')
+    drawnow
+        
+    len = pathLength(path);
+    if len < min_path_length
+        min_path = path;
+        min_path_length = len;
+    end
 end
-Pos(end+1,:) = goal;
 
-T = 0:1:size(Pos,1)-1; % Time vector
-
-[Ps] = MinimumSnapGenerator(T,Pos);
-
-% use as path
-path = Ps';
-
-plot(path(:,1),path(:,2),'r')
+plot(min_path(:,1),min_path(:,2),'b','LineWidth',2)
 
 end
 
