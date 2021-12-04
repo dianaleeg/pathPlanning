@@ -4,18 +4,13 @@ clear all
 
 %% Test
 
-[scaled_grid, grid] = loadMap('city_map.png', 50);
+% [scaled_grid, grid] = loadMap('city_map.png', 50);
+% start = [30, 35];
+% goal = [5, 5];
 
-goal = [5, 5];
-start = [30, 35];
-
-% start = [40, 45];
-% goal = [2, 2];
-
-% load exampleMaps.mat
-% grid = binaryOccupancyMap(complexMap);
-% start = [25,35];
-% goal = [2,2];
+[scaled_grid, grid] = loadMap('house_map.png', 50);
+start = [35,20];
+goal = [5,5];
 
 path = [];
 

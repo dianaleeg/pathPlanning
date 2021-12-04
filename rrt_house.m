@@ -8,12 +8,12 @@ close all
 clc
 
 % load image and create Occupancy map from image
-[house_occgrid, house_occgrid_unscaled] = loadMap('house_map.png', 100);
+[house_occgrid, house_occgrid_unscaled] = loadMap('house_map.png', 50);
 show(house_occgrid_unscaled)
 
 %Set the start and goal states.
-start = [5,5,0];
-goal = [55,80,90];
+start = [30,40,0];
+goal = [5,5,90];
 
 %%
 UAVsize = 0.2;

@@ -3,6 +3,72 @@
 % The authors of this code are: Christian Chang, Christopher Poole, Trevor Rizzo and Diana
 % Lee Guzman
 
+close all
+clear all
+clc
+
+%% Process Overview
+
+
+%% Environment Setup
+
+% MATLAB Toolboxes Needed:
+% 
+% Parallel Computing Toolbox
+% Automated Driving Toolbox
+% Symbolic Math Toolbox
+
+% ensure figures folder exists
+if not(isfolder('figures'))
+    mkdir('figures')
+end
+
+UAVsize = 0.2;
+
+%% Map Generation
+
+[city_occgrid, city_occgrid_unscaled] = loadMap('city_map.png', 50);
+figure
+show(city_occgrid_unscaled)
+title('City Map')
+saveas(gcf,[pwd '/figures/city_map.png'])
+
+inflated_city_occgrid = inflateMap(city_occgrid, UAVsize, 1.0);
+
+[house_occgrid, house_occgrid_unscaled] = loadMap('house_map.png', 50);
+figure
+show(house_occgrid_unscaled)
+title('House Map')
+saveas(gcf,[pwd '/figures/house_map.png'])
+
+inflated_house_occgrid = inflateMap(house_occgrid, UAVsize, 1.0);
+
+%% Path Planning
+
+start_city = [30,35];
+goal_city = [5,5];
+
+start_house = [35,20];
+goal_house = [5,5];
+
+% RRT
+
+[time_elapsed_rrt_grid1, path_distance_rrt_grid1, pthObj, solnInfo] = rrt(inflated_city_occgrid, [start_city 0], [goal_city 0]);   
+plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,'RRT - City Occupancy Grid with Path','/figures/rrt_city_path_1.png');
+
+[time_elapsed_rrt_grid2, path_distance_rrt_grid2, pthObj, solnInfo] = rrt(inflated_house_occgrid, [start_house 0], [goal_house 90]);   
+plotSolvedPath(house_occgrid_unscaled,solnInfo,pthObj,'RRT - House Occupancy Grid with Path','/figures/rrt_house_path_1.png');
+
+% A*
+
+% JPS & SFC
+
+
+%% Path Analysis
+
+
+%% Planner Analysis
+
 iterations = [1;2;3;4;5;6;7;8;9;10];
 
 %Time Elapsed sfc
@@ -10,16 +76,16 @@ time_elapsed_sfc_grid1 = [1;3;2;5;4;7;6;9;10;8];
 time_elapsed_sfc_grid2 = [1;2;3;4;5;6;7;8;9;10];
 
 %Time elapsed RRT
-time_elapsed_rrt_grid1 = [1;10;9;8;7;5;4;3;2;1];
-time_elapsed_rrt_grid2 = [10;9;8;7;6;10;9;4;5;6];
+% time_elapsed_rrt_grid1 = [1;10;9;8;7;5;4;3;2;1];
+% time_elapsed_rrt_grid2 = [10;9;8;7;6;10;9;4;5;6];
 
 %Path Distance SFC
 path_distance_sfc_grid1 = [1;3;2;5;4;7;6;9;10;8];
 path_distance_sfc_grid2 = [1;2;3;4;5;6;7;8;9;10];
 
 %Path Distance RRT
-path_distance_rrt_grid1 = [1;10;9;8;7;5;4;3;2;1];
-path_distance_rrt_grid2 = [10;9;9;7;6;10;9;4;5;6];
+% path_distance_rrt_grid1 = [1;10;9;8;7;5;4;3;2;1];
+% path_distance_rrt_grid2 = [10;9;9;7;6;10;9;4;5;6];
 
 %Nodes Visited SFC
 nodes_visited_sfc_grid1 = [1;3;2;5;4;7;6;9;10;8];
@@ -145,4 +211,6 @@ labels = {'Pass','Fail'};
 pie([rrt_pass, rrt_fail])
 title ("RRT Robustness")
 legend(labels)
+
+%% Custom Functions
 
