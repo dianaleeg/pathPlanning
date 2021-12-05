@@ -159,15 +159,14 @@ function endpoints = SFC(grid, p1,p2)
         plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
         % Find line tangent to ellipse at point o
+        syms x_sym
+        y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
+        y_dot = diff(y);
+        slope = double(vpa(subs(y_dot,x_sym,o_world(1))));
 
         if p1(1) == p2(1)
             endpoints = [endpoints; [p1(1), grid.YWorldLimits(1), p2(1), grid.YWorldLimits(2)]] % [start_x, start_y, end_x, end_y]
         else
-            syms x_sym
-            y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
-            y_dot = diff(y);
-            slope = double(vpa(subs(y_dot,x_sym,o_world(1))));
-
         %     x = linspace(0, grid.XWorldLimits(2));
             len_line = abs(grid.XWorldLimits(2) / cos(theta - atan(slope)));
             x = -len_line:0.5:len_line;
