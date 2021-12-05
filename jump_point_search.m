@@ -32,10 +32,11 @@ plot(goal(1),goal(2),'r.','MarkerSize',15)
 drawnow
 
 nodes_visited = 0;
-[path, nodes_visited] = make_path(grid, start, goal, start, nodes_visited)
+nodes = [];
+[path, nodes_visited, nodes] = make_path(grid, start, start, goal, start, nodes_visited, nodes)
 
 plot(path(:,1), path(:,2), 'y.', 'MarkerSize',15)
-plot(start(1),start(2),'g.','MarkerSize',15)
+plot(start(1),start(2),'r.','MarkerSize',15)
 plot(goal(1),goal(2),'r.','MarkerSize',15)
 drawnow
 
@@ -284,26 +285,37 @@ end
 % Outputs:
 %   * successors of x
 
-function [path, nodes_visited] = make_path(grid, x, g, s, nodes_visited)
-%     global path
+function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visited, nodes)
+    x
+    nodes = [nodes; x];
     if isequal(x, g)
        path = g;
        return
     end
     [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
-    scatter(successors(:,1), successors(:,2), 'g');
-    for i = 1:size(successors(:,1))
-%         if isequal(successors(i,:), g)
-%             path = [g; x];
-%             return
-%         end
-        [path, nodes_visited] = make_path(grid, successors(i,:), g, s, nodes_visited);
-        [tf, index]=ismember(g,path,'rows');
-        if tf
-            path = [path; x];
-            return
+    successors
+    
+    if ~isequal(successors, [])
+        scatter(successors(:,1), successors(:,2), 'g');
+        for i = 1:size(successors(:,1))
+            if ~isequal(nodes, []) && ismember(successors(i, :), nodes, 'rows')
+                continue
+            end
+    %         if isequal(successors(i,:), g)
+    %             path = [g; x];
+    %             return
+    %         end
+            [path, nodes_visited, nodes] = make_path(grid, x, successors(i,:), g, s, nodes_visited, nodes);
+            if ~isequal(path, null())
+                [tf, index]=ismember(g, path,'rows');
+                if tf
+                    path = [path; x];
+                    return
+                end 
+            end
         end
     end
+    path = null(); 
 %     global path
 %     [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
 %        
