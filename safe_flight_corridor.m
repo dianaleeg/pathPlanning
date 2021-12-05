@@ -118,7 +118,7 @@ function SF_poly = SFC(grid, p1,p2)
                 [0, 1, -y1];
                 [0, 0, 1]];
         perpendicular = T * R_w_to_l_3 * T_neg * [x; y1 * ones(size(x)); ones(size(x))];
-        %plot(perpendicular(1,:), perpendicular(2,:))
+        plot(perpendicular(1,:), perpendicular(2,:))
 
         [intersect_x, intersect_y] = polyxpoly([p1(1), p2(1)], [p1(2), p2(2)], perpendicular(1,:), perpendicular(2,:));
         point_to_line = dist([intersect_x, intersect_y], o_closest_world);
@@ -146,29 +146,10 @@ function SF_poly = SFC(grid, p1,p2)
         ellipse = T * R_l_to_w_3 * T_neg * [x; y_pos; ones(size(x))];
         ellipse_neg = T * R_l_to_w_3 * T_neg * [x; y_neg; ones(size(x))];
 
-        %plot(ellipse(1,:), ellipse(2,:))
-        %plot(ellipse_neg(1,:), ellipse_neg(2,:))
+        plot(ellipse(1,:), ellipse(2,:))
+        plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
         % Find line tangent to ellipse at point o
-        syms x_sym
-        y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
-        y_dot = diff(y);
-        slope = vpa(subs(y_dot,x_sym,o_world(1)));
-
-    %     x = linspace(0, grid.XWorldLimits(2));
-        len_line = abs(grid.XWorldLimits(2) / cos(theta));
-        x = -len_line:0.5:len_line;
-        x1 = o_closest_world(1); % Specify your starting x
-        y1 = o_closest_world(2);  % Specify your starting y
-        y = -slope*(x - x1) + y1; % TODO choose positive or negative slope
-        T = [[1, 0, x1];
-            [0, 1, y1];
-            [0, 0, 1]];
-        T_neg = [[1, 0, -x1];
-            [0, 1, -y1];
-            [0, 0, 1]];
-        tangent = double(T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))]);
-        %plot(tangent(1,:),tangent(2,:), 'b'); % plot the graph, and store line reference in a variable.
 
         if p1(1) == p2(1)
             endpoints = [endpoints; [p1(1), grid.YWorldLimits(1), p2(1), grid.YWorldLimits(2)]] % [start_x, start_y, end_x, end_y]
