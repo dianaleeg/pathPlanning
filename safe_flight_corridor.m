@@ -19,17 +19,18 @@ close all
 
 %% Test
 grid = loadMap('city_map.png', 50);
+
 goal = [20, 25];
 start = [30, 35];
 
-goal = [30, 25];
-start = [20, 35];
+% goal = [30, 25];
+% start = [20, 35];
 
-goal = [20, 24];
-start = [14, 24];
+% goal = [20, 24];
+% start = [14, 24];
 
-goal = [20, 25];
-start = [25, 30]; 
+% goal = [20, 25];
+% start = [25, 30]; 
 
 % goal = [24, 20];
 % start = [24, 30];
@@ -43,9 +44,6 @@ p1 = start;
 p2 = goal;
 
 endpoints = SFC(grid, p1,p2)
-vert_list = tangentLinestoPoly(endpoints)
-
-plot(vert_list(:,1),vert_list(:,2),'r.','MarkerSize',25)
 
 function endpoints = SFC(grid, p1,p2)
     %% Step 1: Set Bounding box
@@ -213,6 +211,38 @@ function endpoints = SFC(grid, p1,p2)
             end
         end
     end
+    
+    %% Calculate polygons
+
+    intersection_list = tangentLinesIntersections(endpoints)        
+    plot(intersection_list(:,1),intersection_list(:,2),'r.','MarkerSize',25)
+    
+    filter_distance = 5;
+    filter_increment = 1;
+    continue_incrementing = true;
+    
+    while (continue_incrementing == true)
+        filtered_intersection_list = [];
+        for i = 1:length(intersection_list)
+            len_to_mp = dist(intersection_list(i,:),midpoint);
+            
+            if len_to_mp <= filter_distance
+                filtered_intersection_list = [filtered_intersection_list; intersection_list(i,:)];
+            end
+        end
+        
+        if (isempty(filtered_intersection_list) == 0)
+            warning('off', 'MATLAB:polyshape:repairedBySimplify')
+            warning('off', 'MATLAB:polyshape:boundary3Points')
+            SF_poly = polyshape(filtered_intersection_list);
+        
+            if (isempty(SF_poly.Vertices) == 0)
+                continue_incrementing = false;
+                plot(SF_poly)
+            end
+        end
+        filter_distance = filter_distance + filter_increment;
+    end
 end
 
 %% Helper Functions
@@ -227,12 +257,12 @@ function d = point_to_line_dist(p1, p2, p3)
       d = norm(cross(a,b)) / norm(a);
 end
 
-function vert_list = tangentLinestoPoly(endpoints)
-    vert_list = [];
-    n = length(endpoints);
+function intersection_list = tangentLinesIntersections(endpoints)
+    intersection_list = [];
+    n = size(endpoints,1);
     indices = nchoosek(1:n,2);
     
-    for i = 1:length(indices)
+    for i = 1:size(indices,1)
         x1 = [endpoints(indices(i,1),1),endpoints(indices(i,1),3)];
         y1 = [endpoints(indices(i,1),2),endpoints(indices(i,1),4)];
         
@@ -245,6 +275,12 @@ function vert_list = tangentLinestoPoly(endpoints)
         x_intersect = fzero(@(x) polyval(p1-p2,x),3);
         y_intersect = polyval(p1,x_intersect);
         
-        vert_list = [vert_list; x_intersect y_intersect];
+        if (abs(x_intersect) < 1e4) && (abs(y_intersect) < 1e4)
+            intersection_list = [intersection_list; x_intersect y_intersect];
+        end
+    end
+    
+    if isempty(intersection_list)
+        intersection_list = [endpoints(:,1:2); endpoints(:,3:4)];
     end
 end
