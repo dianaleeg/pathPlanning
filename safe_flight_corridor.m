@@ -20,11 +20,7 @@ close all
 %% Test
 grid = loadMap('city_map.png', 50);
 
-load test_nodes.mat
-
-
-% p1 = start;
-% p2 = goal;
+nodes = [25,30; 13,18; 11,16; 7,12]; % test nodes for debugging
 
 for i = 1:(size(nodes,1)-1)
     p1 = nodes(i,:);
