@@ -109,9 +109,12 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
             % Check if px == x (first move)
             elseif isequal(px, x)
                 continue;
-            % Check if neighbor is goal node or parent node
-            elseif isequal([i,j], goal) || isequal([i,j], px)
+            % Check if neighbor is goal node 
+            elseif isequal([i,j], goal) 
                 continue;
+            % Check if neighbor is parent node
+            elseif isequal([i,j], px)
+                pruned_neighbors(n_i, n_j) = pruned();
             % Straight Move from px to x
             elseif straight_move
                 % Get path lengths
@@ -124,8 +127,8 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 blockable_h = (i ~= px(1) && abs(j - px(2)) == 2);
                 blockable_v = (j ~= px(2) && abs(i - px(1)) == 2);
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,2])) ...
-                       || (blockable_v && getOccupancy(grid, [2,j]));
+                blocked = (blockable_h && getOccupancy(grid, [i,x(2)])) ...
+                       || (blockable_v && getOccupancy(grid, [x(1),j]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -144,8 +147,8 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 blockable_h = (i == px(1) && abs(j - px(2)) == 2);
                 blockable_v = (j == px(2) && abs(i - px(1)) == 2); %TODO check this
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,2])) ...
-                       || (blockable_v && getOccupancy(grid, [2,j]));
+                blocked = (blockable_h && getOccupancy(grid, [i,x(2)])) ...
+                       || (blockable_v && getOccupancy(grid, [x(1),j]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -221,7 +224,7 @@ function [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited)
     end
     % else jump recursively
     fprintf('recursive \n')
-    [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited+1);
+    [out, nodes_visited] = jump(grid, n, d, g, s, nodes_visited+1);
 end
 
 %% Identify Successors
@@ -237,7 +240,7 @@ function [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_
     successors = [];
     for i = drange(1:3)
         for j = drange(1:3)
-            d = [i-2, j-2]
+            d = [i-2, j-2];
             if isequal(d, [0, 0])
                 continue
 %             elseif ~isequal(d, [1, 0]) % TODO: DEBUG ONLY REMOVE
@@ -263,7 +266,7 @@ end
 %   * successors of x
 
 function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visited, nodes)
-%     x
+    x
     plot(x(1), x(2), 'c.', 'MarkerSize',15);
     nodes = [nodes; x];
     if isequal(x, g)
@@ -271,7 +274,7 @@ function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visit
        return
     end
     [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
-%     successors
+    successors
     
     if ~isequal(successors, [])
         scatter(successors(:,1), successors(:,2), 'g');
@@ -279,10 +282,6 @@ function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visit
             if ~isequal(nodes, []) && ismember(successors(i, :), nodes, 'rows')
                 continue
             end
-    %         if isequal(successors(i,:), g)
-    %             path = [g; x];
-    %             return
-    %         end
             [path, nodes_visited, nodes] = make_path(grid, x, successors(i,:), g, s, nodes_visited, nodes);
             if ~isequal(path, null())
                 [tf, index]=ismember(g, path,'rows');
