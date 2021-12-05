@@ -4,13 +4,21 @@ clear
 
 %% Test
 
-% [scaled_grid, grid] = loadMap('city_map.png', 50);
-% start = [30, 35];
-% goal = [5, 5];
+grid = loadMap('city_map.png', 50);
 
-[scaled_grid, grid] = loadMap('house_map.png', 50);
-start = [35,20];
-goal = [5,5];
+% goal = [20, 25];
+% start = [30, 35];
+
+goal = [33, 40];
+start = [20, 35];
+
+% start = [450, 450];
+% goal = [100, 100];
+
+% load exampleMaps.mat
+% grid = binaryOccupancyMap(complexMap);
+% start = [25,35];
+% goal = [2,2];
 
 % path = [];
 
@@ -99,11 +107,14 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
             elseif n == occupied()
                 pruned_neighbors(n_i,n_j) = occupied();
             % Check if px == x (first move)
-            elseif px == x
+            elseif isequal(px, x)
                 continue;
-            % Check if neighbor is goal node
-            elseif isequal([i,j], goal)
+            % Check if neighbor is goal node 
+            elseif isequal([i,j], goal) 
                 continue;
+            % Check if neighbor is parent node
+            elseif isequal([i,j], px)
+                pruned_neighbors(n_i, n_j) = pruned();
             % Straight Move from px to x
             elseif straight_move
                 % Get path lengths
@@ -113,11 +124,11 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 prune =  px_to_n <= px_to_x_to_n;
                 
                 % Check if path blocked by obstacle
-                blockable_h = (i ~= px(1) && abs(j - px(2)) == 2);
-                blockable_v = (j ~= px(2) && abs(i - px(1)) == 2);
+                blockable_h = px(2) == x(2) && j ~= px(2) && i ~= px(1) && j ~= x(1);
+                blockable_v = px(1) == x(1) && i ~= px(1) && j ~= px(2) && j ~= x(2);
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,2])) ...
-                       || (blockable_v && getOccupancy(grid, [2,j]));
+                blocked = (blockable_h && getOccupancy(grid, [x(1),j])) ...
+                       || (blockable_v && getOccupancy(grid, [i,x(2)]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -133,11 +144,11 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 prune =  px_to_n < px_to_x_to_n;
                 
                 % Check if path blocked by obstaclde
-                blockable_h = (i == px(1) && abs(j - px(2)) == 2);
-                blockable_v = (j == px(2) && abs(i - px(1)) == 2); %TODO check this
+                blockable_h = (i ~= px(1) && abs(i - px(1)) == 2) && j == px(2);
+                blockable_v = (j ~= px(2) && abs(j - px(2)) == 2) && i == px(1);
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,2])) ...
-                       || (blockable_v && getOccupancy(grid, [2,j]));
+                blocked = (blockable_h && getOccupancy(grid, [px(1),j])) ...
+                       || (blockable_v && getOccupancy(grid, [i,px(2)]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -209,30 +220,9 @@ function [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited)
             out = n;
             return
         end
-            
-%         % Check all directions 2 steps away
-%         for i = drange(-1:1)
-%             for j = drange(-1:1)
-%                 di = [i, j];
-%                 % Don't check n or x
-%                 if isequal(di, [0, 0]) || isequal(x, step_node(n, di)) 
-%                     continue
-%                 end
-%                 [jump1, nodes_visited] = jump(grid, n, di, g, s, nodes_visited+1);
-%                 if ~isequal(jump1, null()) 
-%                     fprintf('diagnol special jump\n')
-%                     [jump2, nodes_visited] = jump(grid, jump1, di, g, s, nodes_visited+1);
-%                     if ~isequal(jump2, null())
-%                         out = n;
-%                         fprintf('diagnol special \n')
-%                         return
-%                     end
-%                 end
-%             end
-%         end
     end
     % else jump recursively
-%     fprintf('recursive \n')
+    fprintf('recursive \n')
     [out, nodes_visited] = jump(grid, n, d, g, s, nodes_visited+1);
 end
 
@@ -247,20 +237,27 @@ end
 
 function [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited)
     successors = [];
-    neighbors = prune_neighbors(grid, x, x, g);
-    for i = drange(1:3)
-        for j = drange(1:3)
+    if g(1) > s(1)
+        i_range = [3, 2, 1];
+    else
+        i_range = [1, 2, 3];
+    end
+    if g(2) > s(2)
+        j_range = [3, 2, 1];
+    else
+        j_range = [1, 2, 3];
+    end
+    for i = i_range
+        for j = j_range
             d = [i-2, j-2];
-            if d(1) == 0 && d(2) == 0
+            if isequal(d, [0, 0])
                 continue
-            elseif sign(s(1) - x(1)) == d(1) && sign(s(2) - x(2)) == d(2)
-                continue
-            elseif neighbors(i, j) == unoccupied() || neighbors(i, j) == forced()
-%                 fprintf(' jumping \n')
-                [n, nodes_visited] = jump(grid, x, d, g, s, nodes_visited+1);
-                if ~isequal(n, null())
-                    successors = [successors; n];
-                end
+%             elseif ~isequal(d, [1, 0]) % TODO: DEBUG ONLY REMOVE
+%                 continue
+            end
+            [jp, nodes_visited] = jump(grid, x, d, g, s, nodes_visited);
+            if ~isequal(jp, null())
+                successors = [successors; jp];
             end
                 
         end
@@ -279,6 +276,8 @@ end
 
 function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visited, nodes)
     x
+    plot(x(1), x(2), 'c.', 'MarkerSize',15);
+    drawnow
     nodes = [nodes; x];
     if isequal(x, g)
        path = g;
@@ -293,10 +292,6 @@ function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visit
             if ~isequal(nodes, []) && ismember(successors(i, :), nodes, 'rows')
                 continue
             end
-    %         if isequal(successors(i,:), g)
-    %             path = [g; x];
-    %             return
-    %         end
             [path, nodes_visited, nodes] = make_path(grid, x, successors(i,:), g, s, nodes_visited, nodes);
             if ~isequal(path, null())
                 [tf, index]=ismember(g, path,'rows');
