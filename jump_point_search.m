@@ -124,11 +124,11 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 prune =  px_to_n <= px_to_x_to_n;
                 
                 % Check if path blocked by obstacle
-                blockable_h = (i ~= px(1) && abs(j - px(2)) == 2);
-                blockable_v = (j ~= px(2) && abs(i - px(1)) == 2);
+                blockable_h = px(2) == x(2) && j ~= px(2) && i ~= px(1) && j ~= x(1);
+                blockable_v = px(1) == x(1) && i ~= px(1) && j ~= px(2) && j ~= x(2);
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,x(2)])) ...
-                       || (blockable_v && getOccupancy(grid, [x(1),j]));
+                blocked = (blockable_h && getOccupancy(grid, [x(1),j])) ...
+                       || (blockable_v && getOccupancy(grid, [i,x(2)]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -144,11 +144,11 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
                 prune =  px_to_n < px_to_x_to_n;
                 
                 % Check if path blocked by obstaclde
-                blockable_h = (i == px(1) && abs(j - px(2)) == 2);
-                blockable_v = (j == px(2) && abs(i - px(1)) == 2); %TODO check this
+                blockable_h = (i ~= px(1) && abs(i - px(1)) == 2) && j == px(2);
+                blockable_v = (j ~= px(2) && abs(j - px(2)) == 2) && i == px(1);
                 
-                blocked = (blockable_h && getOccupancy(grid, [i,x(2)])) ...
-                       || (blockable_v && getOccupancy(grid, [x(1),j]));
+                blocked = (blockable_h && getOccupancy(grid, [px(1),j])) ...
+                       || (blockable_v && getOccupancy(grid, [i,px(2)]));
                 
                 if prune && blocked
                     pruned_neighbors(n_i, n_j) = forced();
@@ -178,8 +178,7 @@ end
 % Outputs:
 %   
 function [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited)
-    d
-    n = step_node(x, d)
+    n = step_node(x, d);
     plot(n(1),n(2),'b.','MarkerSize',5)
     %drawnow
     % Check if n is within grid or is an obstacle
@@ -238,8 +237,18 @@ end
 
 function [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited)
     successors = [];
-    for i = drange(1:3)
-        for j = drange(1:3)
+    if g(1) > s(1)
+        i_range = [3, 2, 1];
+    else
+        i_range = [1, 2, 3];
+    end
+    if g(2) > s(2)
+        j_range = [3, 2, 1];
+    else
+        j_range = [1, 2, 3];
+    end
+    for i = i_range
+        for j = j_range
             d = [i-2, j-2];
             if isequal(d, [0, 0])
                 continue
@@ -268,6 +277,7 @@ end
 function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visited, nodes)
     x
     plot(x(1), x(2), 'c.', 'MarkerSize',15);
+    drawnow
     nodes = [nodes; x];
     if isequal(x, g)
        path = g;
