@@ -20,32 +20,26 @@ close all
 %% Test
 grid = loadMap('city_map.png', 50);
 
-goal = [20, 25];
-start = [30, 35];
+load test_nodes.mat
 
-% goal = [30, 25];
-% start = [20, 35];
-
-% goal = [20, 24];
-% start = [14, 24];
-
-% goal = [20, 25];
-% start = [25, 30]; 
-
-% goal = [24, 20];
-% start = [24, 30];
-
+figure
 show(grid)
 hold on
-scatter(goal(1), goal(2), 'r', 'filled')
-scatter(start(1), start(2), 'g', 'filled')
 
-p1 = start;
-p2 = goal;
+% p1 = start;
+% p2 = goal;
 
-endpoints = SFC(grid, p1,p2)
+for i = 1:(size(nodes,1)-1)
+    p1 = nodes(i,:);
+    p2 = nodes(i+1,:);
+    scatter(p1(1), p1(2), 'r', 'filled')
+    scatter(p2(1), p2(2), 'g', 'filled')
 
-function endpoints = SFC(grid, p1,p2)
+    SF_poly{i} = SFC(grid, p1,p2);
+    drawnow
+end
+
+function SF_poly = SFC(grid, p1,p2)
     %% Step 1: Set Bounding box
 
     v_max = 10; % m/s
@@ -124,7 +118,7 @@ function endpoints = SFC(grid, p1,p2)
                 [0, 1, -y1];
                 [0, 0, 1]];
         perpendicular = T * R_w_to_l_3 * T_neg * [x; y1 * ones(size(x)); ones(size(x))];
-        plot(perpendicular(1,:), perpendicular(2,:))
+        %plot(perpendicular(1,:), perpendicular(2,:))
 
         [intersect_x, intersect_y] = polyxpoly([p1(1), p2(1)], [p1(2), p2(2)], perpendicular(1,:), perpendicular(2,:));
         point_to_line = dist([intersect_x, intersect_y], o_closest_world);
@@ -152,8 +146,8 @@ function endpoints = SFC(grid, p1,p2)
         ellipse = T * R_l_to_w_3 * T_neg * [x; y_pos; ones(size(x))];
         ellipse_neg = T * R_l_to_w_3 * T_neg * [x; y_neg; ones(size(x))];
 
-        plot(ellipse(1,:), ellipse(2,:))
-        plot(ellipse_neg(1,:), ellipse_neg(2,:))
+        %plot(ellipse(1,:), ellipse(2,:))
+        %plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
         % Find line tangent to ellipse at point o
         syms x_sym
@@ -174,7 +168,7 @@ function endpoints = SFC(grid, p1,p2)
             [0, 1, -y1];
             [0, 0, 1]];
         tangent = double(T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))]);
-        plot(tangent(1,:),tangent(2,:), 'b'); % plot the graph, and store line reference in a variable.
+        %plot(tangent(1,:),tangent(2,:), 'b'); % plot the graph, and store line reference in a variable.
 
         x_bounds = [min(bb_world(:, 1)), max(bb_world(:, 1))];
         min_idx = find(round(tangent(1,:)) == round(x_bounds(1)));
@@ -215,7 +209,7 @@ function endpoints = SFC(grid, p1,p2)
     %% Calculate polygons
 
     intersection_list = tangentLinesIntersections(endpoints)        
-    plot(intersection_list(:,1),intersection_list(:,2),'r.','MarkerSize',25)
+    %plot(intersection_list(:,1),intersection_list(:,2),'r.','MarkerSize',25)
     
     filter_distance = 5;
     filter_increment = 1;
@@ -241,7 +235,13 @@ function endpoints = SFC(grid, p1,p2)
                 plot(SF_poly)
             end
         end
-        filter_distance = filter_distance + filter_increment;
+        
+        if filter_distance > 100
+            continue_incrementing = false;
+            warning('too few intersections found for polygon')
+        else
+            filter_distance = filter_distance + filter_increment;
+        end
     end
 end
 
