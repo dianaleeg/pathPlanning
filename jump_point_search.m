@@ -107,10 +107,10 @@ function pruned_neighbors = prune_neighbors(grid, x, px, goal)
             elseif n == occupied()
                 pruned_neighbors(n_i,n_j) = occupied();
             % Check if px == x (first move)
-            elseif px == x
+            elseif isequal(px, x)
                 continue;
-            % Check if neighbor is goal node
-            elseif isequal([i,j], goal)
+            % Check if neighbor is goal node or parent node
+            elseif isequal([i,j], goal) || isequal([i,j], px)
                 continue;
             % Straight Move from px to x
             elseif straight_move
@@ -175,7 +175,8 @@ end
 % Outputs:
 %   
 function [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited)
-    n = step_node(x, d);
+    d
+    n = step_node(x, d)
     plot(n(1),n(2),'b.','MarkerSize',5)
     %drawnow
     % Check if n is within grid or is an obstacle
@@ -217,31 +218,10 @@ function [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited)
             out = n;
             return
         end
-            
-%         % Check all directions 2 steps away
-%         for i = drange(-1:1)
-%             for j = drange(-1:1)
-%                 di = [i, j];
-%                 % Don't check n or x
-%                 if isequal(di, [0, 0]) || isequal(x, step_node(n, di)) 
-%                     continue
-%                 end
-%                 [jump1, nodes_visited] = jump(grid, n, di, g, s, nodes_visited+1);
-%                 if ~isequal(jump1, null()) 
-%                     fprintf('diagnol special jump\n')
-%                     [jump2, nodes_visited] = jump(grid, jump1, di, g, s, nodes_visited+1);
-%                     if ~isequal(jump2, null())
-%                         out = n;
-%                         fprintf('diagnol special \n')
-%                         return
-%                     end
-%                 end
-%             end
-%         end
     end
     % else jump recursively
-%     fprintf('recursive \n')
-    [out, nodes_visited] = jump(grid, n, d, g, s, nodes_visited+1);
+    fprintf('recursive \n')
+    [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited+1);
 end
 
 %% Identify Successors
@@ -255,20 +235,17 @@ end
 
 function [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited)
     successors = [];
-    neighbors = prune_neighbors(grid, x, x, g);
     for i = drange(1:3)
         for j = drange(1:3)
-            d = [i-2, j-2];
-            if d(1) == 0 && d(2) == 0
+            d = [i-2, j-2]
+            if isequal(d, [0, 0])
                 continue
-            elseif sign(s(1) - x(1)) == d(1) && sign(s(2) - x(2)) == d(2)
-                continue
-            elseif neighbors(i, j) == unoccupied() || neighbors(i, j) == forced()
-%                 fprintf(' jumping \n')
-                [n, nodes_visited] = jump(grid, x, d, g, s, nodes_visited+1);
-                if ~isequal(n, null())
-                    successors = [successors; n];
-                end
+%             elseif ~isequal(d, [1, 0]) % TODO: DEBUG ONLY REMOVE
+%                 continue
+            end
+            [jp, nodes_visited] = jump(grid, x, d, g, s, nodes_visited);
+            if ~isequal(jp, null())
+                successors = [successors; jp];
             end
                 
         end
@@ -286,14 +263,15 @@ end
 %   * successors of x
 
 function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visited, nodes)
-    x
+%     x
+    plot(x(1), x(2), 'c.', 'MarkerSize',15);
     nodes = [nodes; x];
     if isequal(x, g)
        path = g;
        return
     end
     [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
-    successors
+%     successors
     
     if ~isequal(successors, [])
         scatter(successors(:,1), successors(:,2), 'g');
