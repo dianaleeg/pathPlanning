@@ -164,7 +164,8 @@ function endpoints = SFC(grid, p1,p2)
         slope = vpa(subs(y_dot,x_sym,o_world(1)));
 
     %     x = linspace(0, grid.XWorldLimits(2));
-        x = -grid.XWorldLimits(2):grid.XWorldLimits(2);
+        len_line = abs(grid.XWorldLimits(2) / cos(theta));
+        x = -len_line:0.5:len_line;
         x1 = o_closest_world(1); % Specify your starting x
         y1 = o_closest_world(2);  % Specify your starting y
         y = -slope*(x - x1) + y1; % TODO choose positive or negative slope
