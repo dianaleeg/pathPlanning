@@ -176,10 +176,10 @@ function SF_poly = SFC(grid, p1,p2)
             syms x_sym
             y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
             y_dot = diff(y);
-            slope = vpa(subs(y_dot,x_sym,o_world(1)));
+            slope = double(vpa(subs(y_dot,x_sym,o_world(1))));
 
         %     x = linspace(0, grid.XWorldLimits(2));
-            len_line = abs(grid.XWorldLimits(2) / cos(90 - theta));
+            len_line = abs(grid.XWorldLimits(2) / cos(theta - atan(slope)));
             x = -len_line:0.5:len_line;
 
             x1 = o_closest_world(1); % Specify your starting x
