@@ -42,7 +42,10 @@ scatter(start(1), start(2), 'g', 'filled')
 p1 = start;
 p2 = goal;
 
-SFC(grid, p1,p2)
+endpoints = SFC(grid, p1,p2)
+vert_list = tangentLinestoPoly(endpoints)
+
+plot(vert_list(:,1),vert_list(:,2),'r.','MarkerSize',25)
 
 function endpoints = SFC(grid, p1,p2)
     %% Step 1: Set Bounding box
@@ -177,7 +180,10 @@ function endpoints = SFC(grid, p1,p2)
         x_bounds = [min(bb_world(:, 1)), max(bb_world(:, 1))];
         min_idx = find(round(tangent(1,:)) == round(x_bounds(1)));
         max_idx = find(round(tangent(1,:)) == round(x_bounds(2)));
-        endpoints = [endpoints; tangent(1:2,min_idx(1))', tangent(1:2,max_idx(end))']
+        
+        if (~isempty(min_idx) && ~isempty(max_idx))
+            endpoints = [endpoints; tangent(1:2,min_idx(1))', tangent(1:2,max_idx(end))'] % [start_x, start_y, end_x, end_y]
+        end
         % plot(x, y,'r')
 
         % tangent plane to the ellipsoid at this point creates a half space
@@ -218,4 +224,26 @@ function d = point_to_line_dist(p1, p2, p3)
       a = [p1, 0] - [p2, 0];
       b = [p3, 0] - [p2, 0];
       d = norm(cross(a,b)) / norm(a);
+end
+
+function vert_list = tangentLinestoPoly(endpoints)
+    vert_list = [];
+    n = length(endpoints);
+    indices = nchoosek(1:n,2);
+    
+    for i = 1:length(indices)
+        x1 = [endpoints(indices(i,1),1),endpoints(indices(i,1),3)];
+        y1 = [endpoints(indices(i,1),2),endpoints(indices(i,1),4)];
+        
+        x2 = [endpoints(indices(i,2),1),endpoints(indices(i,2),3)];
+        y2 = [endpoints(indices(i,2),2),endpoints(indices(i,2),4)];
+
+        p1 = polyfit(x1,y1,1);
+        p2 = polyfit(x2,y2,1);
+        
+        x_intersect = fzero(@(x) polyval(p1-p2,x),3);
+        y_intersect = polyval(p1,x_intersect);
+        
+        vert_list = [vert_list; x_intersect y_intersect];
+    end
 end
