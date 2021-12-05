@@ -22,9 +22,6 @@ grid = loadMap('city_map.png', 50);
 
 load test_nodes.mat
 
-figure
-show(grid)
-hold on
 
 % p1 = start;
 % p2 = goal;
@@ -32,8 +29,9 @@ hold on
 for i = 1:(size(nodes,1)-1)
     p1 = nodes(i,:);
     p2 = nodes(i+1,:);
-    scatter(p1(1), p1(2), 'r', 'filled')
-    scatter(p2(1), p2(2), 'g', 'filled')
+    figure
+    show(grid)
+    hold on
 
     SF_poly{i} = SFC(grid, p1,p2);
     drawnow
@@ -118,7 +116,7 @@ function SF_poly = SFC(grid, p1,p2)
                 [0, 1, -y1];
                 [0, 0, 1]];
         perpendicular = T * R_w_to_l_3 * T_neg * [x; y1 * ones(size(x)); ones(size(x))];
-        plot(perpendicular(1,:), perpendicular(2,:))
+        %plot(perpendicular(1,:), perpendicular(2,:))
 
         [intersect_x, intersect_y] = polyxpoly([p1(1), p2(1)], [p1(2), p2(2)], perpendicular(1,:), perpendicular(2,:));
         point_to_line = dist([intersect_x, intersect_y], o_closest_world);
@@ -146,8 +144,8 @@ function SF_poly = SFC(grid, p1,p2)
         ellipse = T * R_l_to_w_3 * T_neg * [x; y_pos; ones(size(x))];
         ellipse_neg = T * R_l_to_w_3 * T_neg * [x; y_neg; ones(size(x))];
 
-        plot(ellipse(1,:), ellipse(2,:))
-        plot(ellipse_neg(1,:), ellipse_neg(2,:))
+        %plot(ellipse(1,:), ellipse(2,:))
+        %plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
         % Find line tangent to ellipse at point o
         syms x_sym
@@ -211,19 +209,39 @@ function SF_poly = SFC(grid, p1,p2)
     %% Calculate polygons
 
     intersection_list = tangentLinesIntersections(endpoints)        
-    %plot(intersection_list(:,1),intersection_list(:,2),'r.','MarkerSize',25)
+    plot(intersection_list(:,1),intersection_list(:,2),'r.','MarkerSize',25)
     
-    filter_distance = 5;
+    filter_distance = 8;
     filter_increment = 1;
     continue_incrementing = true;
-    
+    quadrant_satisfied = zeros(1,4);
+    filtered_intersection_list = [];
+    purge = zeros(1,size(intersection_list,1));
+
     while (continue_incrementing == true)
-        filtered_intersection_list = [];
-        for i = 1:length(intersection_list)
+        for i = [1:length(intersection_list)]
             len_to_mp = dist(intersection_list(i,:),midpoint);
+            angle_from_mp = mod(atan2(intersection_list(i,2)-midpoint(2),intersection_list(i,1)-midpoint(1)),2*pi);
+            quadrant = ceil(4*(angle_from_mp/(2*pi)));
             
-            if len_to_mp <= filter_distance
+            % remove nearby nodes
+            purge_distance = 5;
+            
+            for j = 1:size(intersection_list,1)
+                len_to_current_node = dist(intersection_list(i,:),intersection_list(j,:));
+                
+                if (len_to_current_node < purge_distance) && (len_to_current_node > 0)
+                    purge(j) = 1;
+                end
+            end
+
+            if (len_to_mp <= filter_distance) && (quadrant_satisfied(quadrant) == 0) && (purge(i) == 0)
                 filtered_intersection_list = [filtered_intersection_list; intersection_list(i,:)];
+                quadrant_satisfied(quadrant) = 1
+                
+                if quadrant_satisfied == ones(1,4)
+                    quadrant_satisfied = zeros(1,4);
+                end
             end
         end
         
