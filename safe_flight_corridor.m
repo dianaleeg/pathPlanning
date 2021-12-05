@@ -156,35 +156,38 @@ function endpoints = SFC(grid, p1,p2)
         plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
         % Find line tangent to ellipse at point o
-        syms x_sym
-        y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
-        y_dot = diff(y);
-        slope = vpa(subs(y_dot,x_sym,o_world(1)));
 
-    %     x = linspace(0, grid.XWorldLimits(2));
-        len_line = abs(grid.XWorldLimits(2) / cos(theta));
-        x = -len_line:0.5:len_line;
-        x1 = o_closest_world(1); % Specify your starting x
-        y1 = o_closest_world(2);  % Specify your starting y
-        y = -slope*(x - x1) + y1; % TODO choose positive or negative slope
-        T = [[1, 0, x1];
-            [0, 1, y1];
-            [0, 0, 1]];
-        T_neg = [[1, 0, -x1];
-            [0, 1, -y1];
-            [0, 0, 1]];
-        tangent = double(T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))]);
-        plot(tangent(1,:),tangent(2,:), 'b'); % plot the graph, and store line reference in a variable.
+        if p1(1) == p2(1)
+            endpoints = [endpoints; [p1(1), grid.YWorldLimits(1), p2(1), grid.YWorldLimits(2)]] % [start_x, start_y, end_x, end_y]
+        else
+            syms x_sym
+            y = midpoint(2) + sqrt(abs(1 - (((x_sym-midpoint(1))^2) / ((len/2)^2))) * height);
+            y_dot = diff(y);
+            slope = vpa(subs(y_dot,x_sym,o_world(1)));
 
-        x_bounds = [min(bb_world(:, 1)), max(bb_world(:, 1))];
-        min_idx = find(round(tangent(1,:)) == round(x_bounds(1)));
-        max_idx = find(round(tangent(1,:)) == round(x_bounds(2)));
-        
-        if (~isempty(min_idx) && ~isempty(max_idx))
+        %     x = linspace(0, grid.XWorldLimits(2));
+            len_line = abs(grid.XWorldLimits(2) / cos(90 - theta));
+            x = -len_line:0.5:len_line;
+
+            x1 = o_closest_world(1); % Specify your starting x
+            y1 = o_closest_world(2);  % Specify your starting y
+            y = -slope*(x - x1) + y1; % TODO choose positive or negative slope
+            T = [[1, 0, x1];
+                [0, 1, y1];
+                [0, 0, 1]];
+            T_neg = [[1, 0, -x1];
+                [0, 1, -y1];
+                [0, 0, 1]];
+            tangent = double(T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))]);
+            plot(tangent(1,:),tangent(2,:), 'b'); % plot the graph, and store line reference in a variable.
+
+            x_bounds = [min(bb_world(:, 1)), max(bb_world(:, 1))];
+            min_idx = find(round(tangent(1,:)) == round(x_bounds(1)));
+            max_idx = find(round(tangent(1,:)) == round(x_bounds(2)));
+
             endpoints = [endpoints; tangent(1:2,min_idx(1))', tangent(1:2,max_idx(end))'] % [start_x, start_y, end_x, end_y]
+            % plot(x, y,'r')
         end
-        % plot(x, y,'r')
-
         % tangent plane to the ellipsoid at this point creates a half space
         for i = 1:bb_size(1)
             if bb_occupancy(i) == 1
