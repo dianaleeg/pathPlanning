@@ -1,23 +1,26 @@
 close all
 clc
-clear all
+clear
 
 %% Test
 
 grid = loadMap('city_map.png', 50);
 
-goal = [20, 25];
-start = [30, 35];
+% goal = [20, 25];
+% start = [30, 35];
 
-% start = [40, 45];
-% goal = [2, 2];
+goal = [33, 40];
+start = [20, 35];
+
+% start = [450, 450];
+% goal = [100, 100];
 
 % load exampleMaps.mat
 % grid = binaryOccupancyMap(complexMap);
 % start = [25,35];
 % goal = [2,2];
 
-path = [];
+% path = [];
 
 figure
 show(grid)
@@ -25,10 +28,16 @@ hold on
 grid on
 
 plot(start(1),start(2),'g.','MarkerSize',15)
+plot(goal(1),goal(2),'r.','MarkerSize',15)
 drawnow
 
 nodes_visited = 0;
 [path, nodes_visited] = make_path(grid, start, goal, start, nodes_visited)
+
+plot(path(:,1), path(:,2), 'y.', 'MarkerSize',15)
+plot(start(1),start(2),'g.','MarkerSize',15)
+plot(goal(1),goal(2),'r.','MarkerSize',15)
+drawnow
 
 % Function dist
 % Inputs:
@@ -276,40 +285,59 @@ end
 %   * successors of x
 
 function [path, nodes_visited] = make_path(grid, x, g, s, nodes_visited)
-    global path
+%     global path
+    if isequal(x, g)
+       path = g;
+       return
+    end
     [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
-       
-    found_successor = false;
-    i = 1;
-
-    %for i = 1:size(successors,1)
-    while found_successor == false && i <= size(successors,1)
-        if ~isempty(path)
-            c = ismember(path,successors(i,:),'row');
-        else
-            path = s;
-            c = 0;
-        end
-        
-        if ~any(c(:))
-            successor = successors(i,:);
-            found_successor = true;
-        else
-            successor = successors(1,:);
-        end
-        
-        i = i+1;
-        path = [path; successor]
-        
-        plot(successor(1),successor(2),'g.','MarkerSize',15)
-        drawnow
-
-        if (all(successor ~= x)) 
-            [path, nodes_visited] = make_path(grid, successor, g, x, nodes_visited);
+    scatter(successors(:,1), successors(:,2), 'g');
+    for i = 1:size(successors(:,1))
+%         if isequal(successors(i,:), g)
+%             path = [g; x];
+%             return
+%         end
+        [path, nodes_visited] = make_path(grid, successors(i,:), g, s, nodes_visited);
+        [tf, index]=ismember(g,path,'rows');
+        if tf
+            path = [path; x];
+            return
         end
     end
-    
-    if (path(end,:) ~= g)
-        warning('Goal not achievable! Stopping...')
-    end
+%     global path
+%     [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
+%        
+%     found_successor = false;
+%     i = 1;
+% 
+%     %for i = 1:size(successors,1)
+%     while found_successor == false && i <= size(successors,1)
+%         if ~isempty(path)
+%             c = ismember(path,successors(i,:),'row');
+%         else
+%             path = s;
+%             c = 0;
+%         end
+%         
+%         if ~any(c(:))
+%             successor = successors(i,:);
+%             found_successor = true;
+%         else
+%             successor = successors(1,:);
+%         end
+%         
+%         i = i+1;
+%         path = [path; successor]
+%         
+%         plot(successor(1),successor(2),'g.','MarkerSize',15)
+%         drawnow
+% 
+%         if (all(successor ~= x)) 
+%             [path, nodes_visited] = make_path(grid, successor, g, x, nodes_visited);
+%         end
+%     end
+%     
+%     if (path(end,:) ~= g)
+%         warning('Goal not achievable! Stopping...')
+%     end
 end
