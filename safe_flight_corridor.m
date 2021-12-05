@@ -28,6 +28,9 @@ start = [20, 35];
 goal = [20, 24];
 start = [14, 24];
 
+goal = [20, 25];
+start = [25, 30]; 
+
 % goal = [24, 20];
 % start = [24, 30];
 
@@ -158,7 +161,7 @@ function endpoints = SFC(grid, p1,p2)
         slope = vpa(subs(y_dot,x_sym,o_world(1)));
 
     %     x = linspace(0, grid.XWorldLimits(2));
-        x = 0:grid.XWorldLimits(2);
+        x = -grid.XWorldLimits(2):grid.XWorldLimits(2);
         x1 = o_closest_world(1); % Specify your starting x
         y1 = o_closest_world(2);  % Specify your starting y
         y = -slope*(x - x1) + y1; % TODO choose positive or negative slope
@@ -168,13 +171,13 @@ function endpoints = SFC(grid, p1,p2)
         T_neg = [[1, 0, -x1];
             [0, 1, -y1];
             [0, 0, 1]];
-        tangent = T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))];
+        tangent = double(T * R_l_to_w_3 * T_neg * [x; y; ones(size(x))]);
         plot(tangent(1,:),tangent(2,:), 'b'); % plot the graph, and store line reference in a variable.
 
         x_bounds = [min(bb_world(:, 1)), max(bb_world(:, 1))];
-        min_idx = find(tangent(1,:) == round(x_bounds(1)));
-        max_idx = find(tangent(1,:) == round(x_bounds(2)));
-        endpoints = [endpoints; tangent(1:2,min_idx)', tangent(1:2,max_idx)'];
+        min_idx = find(round(tangent(1,:)) == round(x_bounds(1)));
+        max_idx = find(round(tangent(1,:)) == round(x_bounds(2)));
+        endpoints = [endpoints; tangent(1:2,min_idx(1))', tangent(1:2,max_idx(end))']
         % plot(x, y,'r')
 
         % tangent plane to the ellipsoid at this point creates a half space
