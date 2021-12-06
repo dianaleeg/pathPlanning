@@ -38,7 +38,7 @@ end
 
 plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
 
-function SF_poly = SFC(grid, p1,p2)
+function SF_poly = safe_flight_corridor(grid, p1,p2)
     %% Step 1: Set Bounding box
 
     v_max = 10; % m/s

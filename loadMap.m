@@ -14,5 +14,5 @@ size_act = size(bwimage,1);
 scale = (size_act / size_exp);
 
 occgrid = binaryOccupancyMap(bwimage_sclaed); % load in to occupancy grid
-occgrid_unscaled = binaryOccupancyMap(bwimage, scale); % load in to occupancy grid
+occgrid_unscaled = binaryOccupancyMap(bwimage, scale); % load in to occupancy gridz
 end

@@ -1,44 +1,72 @@
-close all
-clc
-clear
+function [path, nodes_visited, nodes] = jump_point_search(grid, px, x, g, s, nodes_visited, nodes)
+    plot(x(1), x(2), 'c.', 'MarkerSize',15);
+    drawnow
+    nodes = [nodes; x];
+    if isequal(x, g)
+       path = g;
+       return
+    end
+    [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
+    
+    if ~isequal(successors, [])
+        scatter(successors(:,1), successors(:,2), 'g');
+        for i = 1:size(successors(:,1))
+            if ~isequal(nodes, []) && ismember(successors(i, :), nodes, 'rows')
+                continue
+            end
+            [path, nodes_visited, nodes] = jump_point_search(grid, x, successors(i,:), g, s, nodes_visited, nodes);
+            if ~isequal(path, null())
+                [tf, index]=ismember(g, path,'rows');
+                if tf
+                    path = [path; x];
+                    return
+                end 
+            end
+        end
+    end
+    path = null(); 
+end
+% close all
+% clc
+% clear
 
 %% Test
 
-grid = loadMap('city_map.png', 50);
-
-% goal = [20, 25];
-% start = [30, 35];
-
-goal = [33, 40];
-start = [20, 35];
-
-% start = [450, 450];
-% goal = [100, 100];
-
-% load exampleMaps.mat
-% grid = binaryOccupancyMap(complexMap);
-% start = [25,35];
-% goal = [2,2];
-
-% path = [];
-
-figure
-show(grid)
-hold on
-grid on
-
-plot(start(1),start(2),'g.','MarkerSize',15)
-plot(goal(1),goal(2),'r.','MarkerSize',15)
-drawnow
-
-nodes_visited = 0;
-nodes = [];
-[path, nodes_visited, nodes] = make_path(grid, start, start, goal, start, nodes_visited, nodes)
-
-plot(path(:,1), path(:,2), 'y.', 'MarkerSize',15)
-plot(start(1),start(2),'r.','MarkerSize',15)
-plot(goal(1),goal(2),'r.','MarkerSize',15)
-drawnow
+% grid = loadMap('city_map.png', 50);
+% 
+% % goal = [20, 25];
+% % start = [30, 35];
+% 
+% goal = [33, 40];
+% start = [20, 35];
+% 
+% % start = [450, 450];
+% % goal = [100, 100];
+% 
+% % load exampleMaps.mat
+% % grid = binaryOccupancyMap(complexMap);
+% % start = [25,35];
+% % goal = [2,2];
+% 
+% % path = [];
+% 
+% figure
+% show(grid)
+% hold on
+% grid on
+% 
+% plot(start(1),start(2),'g.','MarkerSize',15)
+% plot(goal(1),goal(2),'r.','MarkerSize',15)
+% drawnow
+% 
+% nodes_visited = 0;
+% nodes = [];
+% [path, nodes_visited, nodes] = jump_point_search(grid, start, start, goal, start, nodes_visited, nodes)
+% 
+% plot(path(:,1), path(:,2), 'y.', 'MarkerSize',15)
+% plot(start(1),start(2),'r.','MarkerSize',15)
+% plot(goal(1),goal(2),'r.','MarkerSize',15)
+% drawnow
 
 % Function dist
 % Inputs:
@@ -222,7 +250,7 @@ function [out, nodes_visited] = jump(grid, x, d, g, s, nodes_visited)
         end
     end
     % else jump recursively
-    fprintf('recursive \n')
+%     fprintf('recursive \n')
     [out, nodes_visited] = jump(grid, n, d, g, s, nodes_visited+1);
 end
 
@@ -274,69 +302,4 @@ end
 % Outputs:
 %   * successors of x
 
-function [path, nodes_visited, nodes] = make_path(grid, px, x, g, s, nodes_visited, nodes)
-    x
-    plot(x(1), x(2), 'c.', 'MarkerSize',15);
-    drawnow
-    nodes = [nodes; x];
-    if isequal(x, g)
-       path = g;
-       return
-    end
-    [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
-    successors
-    
-    if ~isequal(successors, [])
-        scatter(successors(:,1), successors(:,2), 'g');
-        for i = 1:size(successors(:,1))
-            if ~isequal(nodes, []) && ismember(successors(i, :), nodes, 'rows')
-                continue
-            end
-            [path, nodes_visited, nodes] = make_path(grid, x, successors(i,:), g, s, nodes_visited, nodes);
-            if ~isequal(path, null())
-                [tf, index]=ismember(g, path,'rows');
-                if tf
-                    path = [path; x];
-                    return
-                end 
-            end
-        end
-    end
-    path = null(); 
-%     global path
-%     [successors, nodes_visited] = identify_successors(grid, x, g, s, nodes_visited);
-%        
-%     found_successor = false;
-%     i = 1;
-% 
-%     %for i = 1:size(successors,1)
-%     while found_successor == false && i <= size(successors,1)
-%         if ~isempty(path)
-%             c = ismember(path,successors(i,:),'row');
-%         else
-%             path = s;
-%             c = 0;
-%         end
-%         
-%         if ~any(c(:))
-%             successor = successors(i,:);
-%             found_successor = true;
-%         else
-%             successor = successors(1,:);
-%         end
-%         
-%         i = i+1;
-%         path = [path; successor]
-%         
-%         plot(successor(1),successor(2),'g.','MarkerSize',15)
-%         drawnow
-% 
-%         if (all(successor ~= x)) 
-%             [path, nodes_visited] = make_path(grid, successor, g, x, nodes_visited);
-%         end
-%     end
-%     
-%     if (path(end,:) ~= g)
-%         warning('Goal not achievable! Stopping...')
-%     end
-end
+
