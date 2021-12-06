@@ -7,8 +7,8 @@ clc
 % show(occgrid_unscaled)
 % grid on
 map = occgrid_unscaled;
-start = [7, 7];
-goal = [41, 31];
+start = [35, 40];
+goal = [20, 25];
 
 [occgrid, occgrid_unscaled]= loadMap('city_map.png', 50);
 figure
@@ -40,9 +40,13 @@ function elapsed_time = sfc(map, start, goal)
 
     %% Safe Flight Corridor
     
+    figure
+    show(map)
+    hold on
+    
     path_size = size(path);
     for i = 1:path_size(1)-1
-        SF_poly = safe_flight_corridor(map, path(i,:), path(i+1,:))
+        SF_poly{i} = safe_flight_corridor(map, path(i,:), path(i+1,:));
     end
     
 	[min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)

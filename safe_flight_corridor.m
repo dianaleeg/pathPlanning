@@ -145,8 +145,8 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
         ellipse = T * R_l_to_w_3 * T_neg * [x; y_pos; ones(size(x))];
         ellipse_neg = T * R_l_to_w_3 * T_neg * [x; y_neg; ones(size(x))];
 
-        %plot(ellipse(1,:), ellipse(2,:))
-        %plot(ellipse_neg(1,:), ellipse_neg(2,:))
+        plot(ellipse(1,:), ellipse(2,:))
+        plot(ellipse_neg(1,:), ellipse_neg(2,:))
 
         % Find line tangent to ellipse at point o
         syms x_sym
@@ -255,6 +255,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
             end
 
             if (len_to_mp <= filter_distance) && (quadrant_satisfied(quadrant) == 0) && (purge(i) == 0)
+            %if (len_to_mp <= filter_distance) && (quadrant_satisfied(quadrant) == 0)
                 filtered_intersection_list = [filtered_intersection_list; intersection_list(i,:)];
                 quadrant_satisfied(quadrant) = 1;
                 
