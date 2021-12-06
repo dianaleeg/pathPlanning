@@ -1,4 +1,6 @@
-function [new_pthObj, solnInfo] = astar(map, start_pos, end_pos)
+function [elapsed_time, new_pthObj, solnInfo] = astar(map, start_pos, end_pos)
+    
+    start_time = clock;
     
     %remap start and goal
     new_start_pos(1) = map.GridSize(2) - start_pos(2);
@@ -17,5 +19,8 @@ function [new_pthObj, solnInfo] = astar(map, start_pos, end_pos)
     
     new_pthObj(:,1) = pthObj(:,2);
     new_pthObj(:,2) = map.GridSize(2) - pthObj(:,1);
+    
+    end_time = clock;
+    elapsed_time = start_time - end_time;
 
 end

@@ -54,21 +54,33 @@ goal_house = [5,5; 5,5; 5,5];
 iterations = [1;2;3];
 [numRows, numCols] = size(iterations);
 
+%Time Elapsed astar
+time_elapsed_astar_grid1 = zeros(numRows,1);
+time_elapsed_astar_grid2 = zeros(numRows,1);
+
 %Time Elapsed sfc
-time_elapsed_sfc_grid1 = zeros(numRows,1)
-time_elapsed_sfc_grid2 = zeros(numRows,1)
+time_elapsed_sfc_grid1 = zeros(numRows,1);
+time_elapsed_sfc_grid2 = zeros(numRows,1);
 
 %Time elapsed RRT
-time_elapsed_rrt_grid1 = zeros(numRows,1)
-time_elapsed_rrt_grid2 = zeros(numRows,1)
+time_elapsed_rrt_grid1 = zeros(numRows,1);
+time_elapsed_rrt_grid2 = zeros(numRows,1);
+
+%Path Distance astar
+path_distance_astar_grid1 = zeros(numRows,1);
+path_distance_astar_grid2 = zeros(numRows,1);
 
 %Path Distance SFC
-path_distance_sfc_grid1 = zeros(numRows,1)
-path_distance_sfc_grid2 = zeros(numRows,1)
+path_distance_sfc_grid1 = zeros(numRows,1);
+path_distance_sfc_grid2 = zeros(numRows,1);
 
 %Path Distance RRT
-path_distance_rrt_grid1 = zeros(numRows,1)
-path_distance_rrt_grid2 = zeros(numRows,1)
+path_distance_rrt_grid1 = zeros(numRows,1);
+path_distance_rrt_grid2 = zeros(numRows,1);
+
+%Nodes Visited astar
+nodes_visited_astar_grid1 = zeros(numRows,1);
+nodes_visited_astar_grid2 = zeros(numRows,1);
 
 %Nodes Visited SFC
 nodes_visited_sfc_grid1 = zeros(numRows,1);
@@ -78,6 +90,10 @@ nodes_visited_sfc_grid2 = zeros(numRows,1);
 nodes_visited_rrt_grid1 = zeros(numRows,1);
 nodes_visited_rrt_grid2 = zeros(numRows,1);
 
+%Robustness astar
+robustness_astar_grid1 = zeros(numRows,1);
+robustness_astar_grid2 = zeros(numRows,1);
+
 %Roboustness SFC
 robustness_sfc_grid1 = zeros(numRows,1);
 robustness_sfc_grid2 = zeros(numRows,1);
@@ -86,23 +102,23 @@ robustness_sfc_grid2 = zeros(numRows,1);
 robustness_rrt_grid1 = zeros(numRows,1);
 robustness_rrt_grid2 = zeros(numRows,1);
 
-for i = 1:3
+for i = 1:numRows
     
     %RRT
-    [time_elapsed_rrt_grid1, pthObj, solnInfo] = rrt(inflated_city_occgrid, [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);   
+    [time_elapsed_rrt, pthObj, solnInfo] = rrt(inflated_city_occgrid, [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);   
     mapName = ['RRT - City Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/rrt_city_path_', num2str(i),'.png'];
-    time_elapsed_rrt_grid1(i,1) = time_elapsed_rrt_grid1(6);
+    time_elapsed_rrt_grid1(i,1) = time_elapsed_rrt(6);
     path_distance_rrt_grid1(i,1) = solnInfo.NumNodes;
     [treeRows, treeCols] = size(solnInfo.TreeData);
     nodes_visited_rrt_grid1(i,1) = treeRows;
     robustness_rrt_grid1(i,1) = solnInfo.IsPathFound;
     plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,mapName, mapPath);
     
-    [time_elapsed_rrt_grid2, pthObj, solnInfo] = rrt(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0], [goal_house(i,1) goal_house(i,2) 90]);   
+    [time_elapsed_rrt, pthObj, solnInfo] = rrt(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0], [goal_house(i,1) goal_house(i,2) 90]);   
     mapName = ['RRT - House Occupancy Grid with Path For Iteration ' + num2str(i)];
     mapPath = ['/figures/rrt_house_path_', num2str(i), '.png'];
-    time_elapsed_rrt_grid2(i,1) = time_elapsed_rrt_grid2(6);
+    time_elapsed_rrt_grid2(i,1) = time_elapsed_rrt(6);
     path_distance_rrt_grid2(i,1) = solnInfo.NumNodes;
     [treeRows, treeCols] = size(solnInfo.TreeData);
     nodes_visited_rrt_grid2(i,1) = treeRows;
@@ -110,28 +126,47 @@ for i = 1:3
     plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,mapName, mapPath);
     
     %A*
-    [pthObj, solnInfo] = astar(inflated_city_occgrid,  [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);
+    [time_elapsed_astar, pthObj, solnInfo] = astar(inflated_city_occgrid,  [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);
     mapName = ['A* - City Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/a_star_city_path_',num2str(i), '.png'];
-    time_elapsed_sfc_grid1(i,1) = time_elapsed_sfc_grid1(6);
-    path_distance_sfc_grid1(i,1) = solnInfo.NumNodes;
+    time_elapsed_astar_grid1(i,1) = time_elapsed_astar(6);
+    path_distance_astar_grid1(i,1) = solnInfo.NumNodes;
     [treeRows, treeCols] = size(solnInfo.TreeData);
-    nodes_visited_sfc_grid1(i,1) = treeRows;
-    robustness_sfc_grid1(i,1) = solnInfo.IsPathFound;
+    nodes_visited_astar_grid1(i,1) = treeRows;
+    robustness_astar_grid1(i,1) = solnInfo.IsPathFound;
     plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,mapName, mapPath);
 
-    [pthObj, solnInfo] = astar(inflated_house_occgrid,  [start_house(i,1) start_house(i,2) 0], [goal_house(i,1) goal_house(i,2) 90]);
-    time_elapsed_sfc_grid2(i,1) = time_elapsed_sfc_grid2(6);
-    path_distance_sfc_grid2(i,1) = solnInfo.NumNodes;
+    [time_elapsed_astar, pthObj, solnInfo] = astar(inflated_house_occgrid,  [start_house(i,1) start_house(i,2) 0], [goal_house(i,1) goal_house(i,2) 90]);
+    time_elapsed_astar_grid2(i,1) = time_elapsed_astar(6);
+    path_distance_astar_grid2(i,1) = solnInfo.NumNodes;
     [treeRows, treeCols] = size(solnInfo.TreeData);
-    nodes_visited_sfc_grid2(i,1) = treeRows;
-    robustness_sfc_grid2(i,1) = solnInfo.IsPathFound;
+    nodes_visited_astar_grid2(i,1) = treeRows;
+    robustness_astar_grid2(i,1) = solnInfo.IsPathFound;
     mapName = ['A* - House Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/a_star_house_path_', num2str(i), '.png'];
     plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj, mapName, mapPath);
+    
+    % JPS & SFC
+    time_elapsed_sfc_grid1 = sfc(inflated_city_occgrid,  [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);
+    mapName = ['SFC - City Occupancy Grid with Path For Iteration ', num2str(i)];
+    mapPath = ['/figures/sfc_city_path_',num2str(i), '.png'];
+    time_elapsed_sfc_grid1(i,1) = time_elapsed_sfc_grid1(6);
+    %path_distance_sfc_grid1(i,1) = solnInfo.NumNodes;
+    %[treeRows, treeCols] = size(solnInfo.TreeData);
+    %nodes_visited_sfc_grid1(i,1) = treeRows;
+    %robustness_sfc_grid1(i,1) = solnInfo.IsPathFound;
+    plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,mapName, mapPath);
+    
+    time_elapsed_sfc_grid2 = sfc(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0] , [goal_house(i,1) goal_house(i,2) 90]);
+    time_elapsed_sfc_grid2(i,1) = time_elapsed_sfc_grid2(6);
+    %path_distance_sfc_grid2(i,1) = solnInfo.NumNodes;
+    %[treeRows, treeCols] = size(solnInfo.TreeData);
+    %nodes_visited_sfc_grid2(i,1) = treeRows;
+    %robustness_sfc_grid2(i,1) = solnInfo.IsPathFound;
+    mapName = ['SFC - House Occupancy Grid with Path For Iteration ', num2str(i)];
+    mapPath = ['/figures/sfc_house_path_', num2str(i), '.png'];
+    plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj, mapName, mapPath);
 end
-
-% JPS & SFC
 
 
 %% Path Analysis
