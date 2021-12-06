@@ -1,25 +1,6 @@
-close all
-clear
-clc
 
-[occgrid, occgrid_unscaled]= loadMap('city_map_low_res.png', 50);
-% figure
-% show(occgrid_unscaled)
-% grid on
-map = occgrid_unscaled;
-start = [35, 40];
-goal = [20, 25];
 
-[occgrid, occgrid_unscaled]= loadMap('city_map.png', 50);
-figure
-show(occgrid_unscaled)
-hold on
-grid on
-% start = [7, 7];
-% goal = [41, 31];
-elapsed_time = sfc(map, start, goal)
-
-function elapsed_time = sfc(map, start, goal)
+function [elapsed_time, nodes_visited, grid, min_path] = sfc(map, start, goal)
 
     start_time = clock;
     
@@ -52,5 +33,4 @@ function elapsed_time = sfc(map, start, goal)
 	[min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)
     elapsed_time = start_time - end_time;
     
-	plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
 end 
