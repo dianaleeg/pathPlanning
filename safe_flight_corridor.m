@@ -60,7 +60,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
 
     bb_world = []; % Bounding box points in world frame
     for i = -r_s:r_s
-        for j = -r_s:distance(p1, p2) + r_s
+        for j = -r_s:dist(p1, p2) + r_s
             bb_world = [bb_world; p1 + (R_l_to_w * [j; i])'];
         end
     end
@@ -86,7 +86,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
         scatter(midpoint(1), midpoint(2), 'black');
 
         % Ellipse length along line's x-axis
-        len = distance(p1, p2);
+        len = dist(p1, p2);
 
         % Iterate over bounding box and find closest occupied point
 

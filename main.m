@@ -155,7 +155,7 @@ for i = 1:numRows
     plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj, mapName, mapPath);
     
     % JPS & SFC
-    [elapsed_time, nodes_visited, grid, min_path] = sfc(inflated_city_occgrid,  [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);
+    [elapsed_time, nodes_visited, grid, min_path] = sfc(inflated_city_occgrid,  [start_city(i,1) start_city(i,2)], [goal_city(i,1) goal_city(i,2)]);
     mapName = ['SFC - City Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/sfc_city_path_',num2str(i), '.png'];
     time_elapsed_sfc_grid1(i,1) = time_elapsed(6);
