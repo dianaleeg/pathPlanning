@@ -18,20 +18,25 @@
 % end
 
 %% Test
-% grid = loadMap('city_map.png', 50);
-% 
+% [scaled_grid, grid] = loadMap('city_map.png', 50);
+
 % nodes = [25,30; 13,18; 11,16; 7,12]; % test nodes for debugging
 
+% figure
+% show(grid)
+% hold on
+% 
 % for i = 1:(size(nodes,1)-1)
 %     p1 = nodes(i,:);
 %     p2 = nodes(i+1,:);
-%     figure
-%     show(grid)
-%     hold on
 % 
-%     SF_poly{i} = SFC(grid, p1,p2);
+%     SF_poly{i} = safe_flight_corridor(grid, p1,p2);
 %     drawnow
 % end
+% 
+% [min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)
+% 
+% plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
 
 function SF_poly = safe_flight_corridor(grid, p1,p2)
     %% Step 1: Set Bounding box
@@ -215,14 +220,13 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
     purge = zeros(1,size(intersection_list,1));
 
     while (continue_incrementing == true)
-        for i = [1:length(intersection_list)]
+        for i = [1:size(intersection_list,1)]
             len_to_mp = dist(intersection_list(i,:),midpoint);
             angle_from_mp = mod(atan2(intersection_list(i,2)-midpoint(2),intersection_list(i,1)-midpoint(1)),2*pi);
             quadrant = ceil(4*(angle_from_mp/(2*pi)));
             
             % remove nearby nodes
             purge_distance = 5;
-            
             for j = 1:size(intersection_list,1)
                 len_to_current_node = dist(intersection_list(i,:),intersection_list(j,:));
                 
@@ -233,7 +237,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
 
             if (len_to_mp <= filter_distance) && (quadrant_satisfied(quadrant) == 0) && (purge(i) == 0)
                 filtered_intersection_list = [filtered_intersection_list; intersection_list(i,:)];
-                quadrant_satisfied(quadrant) = 1
+                quadrant_satisfied(quadrant) = 1;
                 
                 if quadrant_satisfied == ones(1,4)
                     quadrant_satisfied = zeros(1,4);
@@ -255,6 +259,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
         if filter_distance > 100
             continue_incrementing = false;
             warning('too few intersections found for polygon')
+            SF_poly = [];
         else
             filter_distance = filter_distance + filter_increment;
         end
