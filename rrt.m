@@ -1,6 +1,8 @@
 
 function [time_traveled, pthObj, solnInfo] = rrt(map, start_pos, end_pos)
 
+    start_time = clock;
+    
     %statespace
     ss = stateSpaceSE2;
 
@@ -22,9 +24,6 @@ function [time_traveled, pthObj, solnInfo] = rrt(map, start_pos, end_pos)
 
     %Plan a path with default settings.
     rng(100,'twister'); % for repeatable result
-    
-    %start timer after variables are set and map is loaded
-    start_time = clock;
     
     %call planner
     [pthObj,solnInfo] = plan(planner,start_pos,end_pos);
