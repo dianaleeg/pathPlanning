@@ -1,6 +1,6 @@
-clear
-clc
-close all
+% clear
+% clc
+% close all
 
 %% Create Ellipsoid
 
@@ -18,22 +18,22 @@ close all
 % end
 
 %% Test
-grid = loadMap('city_map.png', 50);
+% grid = loadMap('city_map.png', 50);
+% 
+% nodes = [25,30; 13,18; 11,16; 7,12]; % test nodes for debugging
 
-nodes = [25,30; 13,18; 11,16; 7,12]; % test nodes for debugging
+% for i = 1:(size(nodes,1)-1)
+%     p1 = nodes(i,:);
+%     p2 = nodes(i+1,:);
+%     figure
+%     show(grid)
+%     hold on
+% 
+%     SF_poly{i} = SFC(grid, p1,p2);
+%     drawnow
+% end
 
-for i = 1:(size(nodes,1)-1)
-    p1 = nodes(i,:);
-    p2 = nodes(i+1,:);
-    figure
-    show(grid)
-    hold on
-
-    SF_poly{i} = SFC(grid, p1,p2);
-    drawnow
-end
-
-function SF_poly = SFC(grid, p1,p2)
+function SF_poly = safe_flight_corridor(grid, p1,p2)
     %% Step 1: Set Bounding box
 
     v_max = 10; % m/s
