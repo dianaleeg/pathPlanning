@@ -25,7 +25,7 @@ for i = 1:size(indices,1)
         if (size(temp_poly.Vertices,1) ~= 0) && (size(temp_poly.Vertices,2) ~= 0)
             intersections{num_intersection} = temp_poly;
             plot(intersections{num_intersection},'FaceColor','green','FaceAlpha',1)
-            intersect_grids{num_intersection} = gridPoly(intersections{num_intersection},2);
+            intersect_grids{num_intersection} = gridPoly(intersections{num_intersection},0.5);
             
             if (size(intersect_grids{num_intersection},1) == 0 || size(intersect_grids{num_intersection},2) == 0)
                 [x_center, y_center] = centroid(intersections{num_intersection}); 
@@ -41,22 +41,28 @@ for i = 1:size(indices,1)
     end
 end
 
-index = ones(1,size(intersections,2));
+purged_count = 1;
+for i=1:size(intersect_grids,2)
+   if size(intersect_grids{i},1) >= 2
+       intersect_grids_purged{purged_count} = intersect_grids{i};
+       purged_count = purged_count+1;
+   end
+end
+    
+index = ones(1,size(intersect_grids_purged,2));
 incrementing_set = 1;
 incrementing = true;
 node_count = 1;
 
 while incrementing == true 
-    for i = 1:size(intersections,2)
-       %if (index(i) < size(intersect_grids{i}))
-        nodes{i}(node_count,:) = intersect_grids{i}(index(i),:);
-       %end
-       if (index(incrementing_set) == size(intersect_grids{incrementing_set},1))
-           if (incrementing_set >= size(intersections,2))
+    for i = 1:size(intersect_grids_purged,2)
+       nodes{i}(node_count,:) = intersect_grids_purged{i}(index(i),:);
+       if (index(incrementing_set) == size(intersect_grids_purged{incrementing_set},1))
+           if (incrementing_set >= size(intersect_grids_purged,2))
                incrementing = false;
-           elseif (incrementing_set + 1 <= size(intersections,2))
+           elseif (incrementing_set + 1 <= size(intersect_grids_purged,2))
                index(incrementing_set + 1) = index(incrementing_set + 1) + 1;
-               if (index(incrementing_set + 1) == size(intersect_grids{incrementing_set + 1},1))
+               if (index(incrementing_set + 1) == size(intersect_grids_purged{incrementing_set + 1},1))
                    incrementing_set = incrementing_set + 1;
                end
            index(1:incrementing_set) = 1;
@@ -72,7 +78,7 @@ min_path_length = inf;
 
 for i = 1:size(nodes{1},1)
     Pos = start;
-    for j = 1:size(intersections,2)
+    for j = 1:size(intersect_grids_purged,2)
         Pos(j+1,:) = nodes{j}(i,:); 
     end
     Pos(end+1,:) = goal;
