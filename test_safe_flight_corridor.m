@@ -2,7 +2,6 @@ close all
 clear
 clc
 
-
 [occgrid, occgrid_unscaled]= loadMap('city_map_low_res.png', 50);
 % figure
 % show(occgrid_unscaled)
@@ -23,7 +22,6 @@ goal = [41, 31];
 
 % start = [5, 42];
 % goal = [50, 5];
-
 
 %% Jump Point Search
 nodes = [];
