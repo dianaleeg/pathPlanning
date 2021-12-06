@@ -89,7 +89,7 @@ robustness_rrt_grid2 = zeros(numRows,1);
 for i = 1:3
     
     %RRT
-    [time_elapsed_rrt_grid1, path_distance_rrt_grid1, pthObj, solnInfo] = rrt(inflated_city_occgrid, [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);   
+    [time_elapsed_rrt_grid1, pthObj, solnInfo] = rrt(inflated_city_occgrid, [start_city(i,1) start_city(i,2) 0], [goal_city(i,1) goal_city(i,2) 0]);   
     mapName = ['RRT - City Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/rrt_city_path_', num2str(i),'.png'];
     time_elapsed_rrt_grid1(i,1) = time_elapsed_rrt_grid1(6);
@@ -99,7 +99,7 @@ for i = 1:3
     robustness_rrt_grid1(i,1) = solnInfo.IsPathFound;
     plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,mapName, mapPath);
     
-    [time_elapsed_rrt_grid2, path_distance_rrt_grid2, pthObj, solnInfo] = rrt(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0], [goal_house(i,1) goal_house(i,2) 90]);   
+    [time_elapsed_rrt_grid2, pthObj, solnInfo] = rrt(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0], [goal_house(i,1) goal_house(i,2) 90]);   
     mapName = ['RRT - House Occupancy Grid with Path For Iteration ' + num2str(i)];
     mapPath = ['/figures/rrt_house_path_', num2str(i), '.png'];
     time_elapsed_rrt_grid2(i,1) = time_elapsed_rrt_grid2(6);

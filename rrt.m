@@ -1,5 +1,5 @@
 
-function [time_traveled, dist_traveled, pthObj, solnInfo] = rrt(map, start_pos, end_pos)
+function [time_traveled, pthObj, solnInfo] = rrt(map, start_pos, end_pos)
 
     %statespace
     ss = stateSpaceSE2;
@@ -33,6 +33,5 @@ function [time_traveled, dist_traveled, pthObj, solnInfo] = rrt(map, start_pos, 
     end_time = clock;
     
     time_traveled = end_time - start_time;
-    dist_traveled = 0;
 
 end
