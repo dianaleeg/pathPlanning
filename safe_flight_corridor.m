@@ -153,7 +153,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
             endpoints = [endpoints; [p1(1), grid.YWorldLimits(1), p2(1), grid.YWorldLimits(2)]] % [start_x, start_y, end_x, end_y]
         else
         %     x = linspace(0, grid.XWorldLimits(2));
-            len_line = abs(grid.XWorldLimits(2) / cos(theta - atan(slope)));
+            len_line = 2*abs(grid.XWorldLimits(2) / cos(theta - atan(slope)));
             x = -len_line:0.5:len_line;
 
             x1 = o_closest_world(1); % Specify your starting x
