@@ -21,8 +21,8 @@ grid on
 % start = [2, 20];
 % goal = [41, 31];
 
-start = [5, 42];
-goal = [50, 5];
+start = [2, 25];
+goal = [42, 6];
 
 
 %% Jump Point Search
