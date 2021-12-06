@@ -15,14 +15,14 @@ show(occgrid_unscaled)
 hold on
 grid on
 
-% start = [7, 7];
-% goal = [41, 31];
+start = [7, 7];
+goal = [41, 31];
 
 % start = [2, 20];
 % goal = [41, 31];
 
-start = [5, 42];
-goal = [50, 5];
+% start = [5, 42];
+% goal = [50, 5];
 
 
 %% Jump Point Search
@@ -50,3 +50,7 @@ path_size = size(path);
 for i = 1:path_size(1)-1
     SF_poly = safe_flight_corridor(map, path(i,:), path(i+1,:))
 end
+
+[min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)
+
+plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
