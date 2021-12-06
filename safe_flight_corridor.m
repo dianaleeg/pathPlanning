@@ -207,6 +207,25 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
         end
     end
     
+    % Add bounding box boundaries to endpoints
+    min_point = p1;
+    max_point = p2;
+    if p1(1) > p2(1)
+        min_point = p2;
+        max_point = p1;
+    end  
+    endpoints = [endpoints; [min_point(1)-r_s, grid.YWorldLimits(1), min_point(1)-r_s, grid.YWorldLimits(2)]];
+    endpoints = [endpoints; [max_point(1)+r_s, grid.YWorldLimits(1), max_point(1)+r_s, grid.YWorldLimits(2)]];
+    
+    min_point = p1;
+    max_point = p2;
+    if p1(2) > p2(2)
+        min_point = p2;
+        max_point = p1;
+    end  
+    endpoints = [endpoints; [grid.XWorldLimits(1), min_point(2)-r_s, grid.XWorldLimits(2), min_point(2)-r_s]];
+    endpoints = [endpoints; [grid.XWorldLimits(1), max_point(2)+r_s, grid.XWorldLimits(2), max_point(2)+r_s]];
+
     %% Calculate polygons
 
     intersection_list = tangentLinesIntersections(endpoints)        
