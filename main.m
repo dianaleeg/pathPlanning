@@ -45,6 +45,7 @@ inflated_house_occgrid = inflateMap(house_occgrid, UAVsize, 1.0);
 
 %% Path Planning
 
+timeout = 10;
 start_city = [30,35; 30,35; 30,35];
 goal_city = [5,5; 5,5; 5,5];
 
@@ -155,22 +156,28 @@ for i = 1:numRows
     plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj, mapName, mapPath);
     
     % JPS & SFC
-    [elapsed_time, nodes_visited, grid, min_path] = sfc(inflated_city_occgrid,  [start_city(i,1) start_city(i,2)], [goal_city(i,1) goal_city(i,2)]);
+    [elapsed_time, nodes_visited, grid, min_path, min_path_len] = sfc(inflated_city_occgrid,  [start_city(i,1) start_city(i,2)], [goal_city(i,1) goal_city(i,2)], timeout);
+    time_elapsed_sfc_grid1(i,1) = time_elapsed(6);
+    path_distance_sfc_grid1(i,1) = min_path_len;
+    nodes_visited_sfc_grid1(i,1) = nodes_visited;
+    if(min_path_len > 0)
+        robustness_sfc_grid1(i,1) = 1;
+    else
+        robustness_sfc_grid1(i,1) = 0;
+    end
     mapName = ['SFC - City Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/sfc_city_path_',num2str(i), '.png'];
-    time_elapsed_sfc_grid1(i,1) = time_elapsed(6);
-    %path_distance_sfc_grid1(i,1) = solnInfo.NumNodes;
-    %[treeRows, treeCols] = size(solnInfo.TreeData);
-    nodes_visited_sfc_grid1(i,1) = nodes_visited;
-    %robustness_sfc_grid1(i,1) = solnInfo.IsPathFound;    
     plotSolvedPath(grid,[], min_path, mapName, mapPath);
     
-    [elapsed_time, nodes_visited, grid, min_path] = sfc(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0] , [goal_house(i,1) goal_house(i,2) 90]);
+    [elapsed_time, nodes_visited, grid, min_path, min_path_len] = sfc(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0] , [goal_house(i,1) goal_house(i,2) 90], timeout);
     time_elapsed_sfc_grid2(i,1) = time_elapsed(6);
-    %path_distance_sfc_grid2(i,1) = solnInfo.NumNodes;
-    %[treeRows, treeCols] = size(solnInfo.TreeData);
+    path_distance_sfc_grid2(i,1) = min_path_len;
     nodes_visited_sfc_grid2(i,1) = nodes_visited;
-    %robustness_sfc_grid2(i,1) = solnInfo.IsPathFound;
+        if(min_path_len > 0)
+        robustness_sfc_grid2(i,1) = 1;
+    else
+        robustness_sfc_grid2(i,1) = 0;
+    end
     mapName = ['SFC - House Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/sfc_house_path_', num2str(i), '.png'];
     plotSolvedPath(grid,[], min_path, mapName, mapPath);

@@ -38,7 +38,18 @@
 % 
 % plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
 
-function SF_poly = safe_flight_corridor(grid, p1,p2)
+function [SF_poly, timeout_occurred] = safe_flight_corridor(grid, p1,p2, start_time, timeout)
+
+    now = clock
+    elapsed = now - start_time
+    if elapsed(6) > timeout
+        timeout_occurred = true;
+        SF_poly = [];
+        return
+    else
+        timeout_occurred = false;
+    end
+        
     %% Step 1: Set Bounding box
 
     v_max = 10; % m/s
@@ -71,6 +82,15 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
 
 
     endpoints = []; % Endpoints lines that create SFC polyhedron [x1_1, y1_1, x1_2, y1_2; ]
+    
+    now = clock
+    elapsed = now - start_time
+    if elapsed(6) > timeout
+        SF_poly = [];
+        timeout_occurred = true;
+        return
+    end
+    
     %% Step 2: Calculate Ellipse 
     while ismember(1, bb_occupancy)
 
@@ -239,6 +259,13 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
     purge = zeros(1,size(intersection_list,1));
 
     while (continue_incrementing == true)
+        now = clock
+        elapsed = now - start_time
+        if elapsed(6) > timeout
+            SF_poly = [];
+            timeout_occurred = true;
+            return
+        end
         for i = [1:size(intersection_list,1)]
             len_to_mp = dist(intersection_list(i,:),midpoint);
             angle_from_mp = mod(atan2(intersection_list(i,2)-midpoint(2),intersection_list(i,1)-midpoint(1)),2*pi);

@@ -1,4 +1,14 @@
-function [path, nodes_visited, nodes] = jump_point_search(grid, px, x, g, s, nodes_visited, nodes)
+function [path, nodes_visited, nodes, timeout_occurred ] = jump_point_search(grid, px, x, g, s, nodes_visited, nodes, start_time, timeout)
+    
+    now = clock;
+    elapsed = now - start_time
+    if elapsed(6) > timeout
+        timeout_occurred = true;
+        return
+    else
+        timeout_occurred = false;
+    end
+
     plot(x(1), x(2), 'c.', 'MarkerSize',15);
     drawnow
     nodes = [nodes; x];
@@ -14,7 +24,7 @@ function [path, nodes_visited, nodes] = jump_point_search(grid, px, x, g, s, nod
             if ~isequal(nodes, []) && ismember(successors(i, :), nodes, 'rows')
                 continue
             end
-            [path, nodes_visited, nodes] = jump_point_search(grid, x, successors(i,:), g, s, nodes_visited, nodes);
+            [path, nodes_visited, nodes, timeout_occurred] = jump_point_search(grid, x, successors(i,:), g, s, nodes_visited, nodes, start_time, timeout);
             if ~isequal(path, null())
                 [tf, index]=ismember(g, path,'rows');
                 if tf

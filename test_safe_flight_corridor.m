@@ -51,7 +51,7 @@ plot(start(1),start(2),'g.','MarkerSize',15)
 plot(goal(1),goal(2),'r.','MarkerSize',15)
 drawnow
 
-[path, nodes_visited, nodes] = jump_point_search(map, start, start, goal, start, nodes_visited, nodes);
+[path, nodes_visited, nodes, timeout_occurred] = jump_point_search(map, start, start, goal, start, nodes_visited, nodes);    
 
 plot(path(:,1), path(:,2), 'y.', 'MarkerSize',15)
 plot(start(1),start(2),'r.','MarkerSize',15)
