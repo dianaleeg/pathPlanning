@@ -19,9 +19,9 @@ function [path, nodes_visited, nodes] = jump_point_search(grid, px, x, g, s, nod
                 [tf, index]=ismember(g, path,'rows');
                 if tf
                     try
-                        if sign(x(1) - path(end,1)) == sign(path(end,1) - path(end-1,1)) && ...
-                           sign(path(end,1) - path(end-1,1)) == sign(path(end,2) - path(end-1,2))
-                           path = [x; path]; 
+                        if sign(x(1) - path(1,1)) == sign(path(1,1) - path(2,1)) && ...
+                           sign(x(2) - path(1,2)) == sign(path(1,2) - path(2,2))
+                           path = [x; path(2:end,:)]; 
                         else
                             path = [x; path];
                         end

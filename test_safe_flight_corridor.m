@@ -2,16 +2,18 @@ close all
 clear
 clc
 
-
-[occgrid, occgrid_unscaled]= loadMap('city_map_low_res.png', 50);
+load exampleMaps.mat
+map = binaryOccupancyMap(simpleMap);
+% [occgrid, occgrid_unscaled]= loadMap('city_map_low_res.png', 50);
 % figure
 % show(occgrid_unscaled)
 % grid on
-map = occgrid_unscaled;
+% map = occgrid_unscaled;
 
 [occgrid, occgrid_unscaled]= loadMap('city_map.png', 50);
 figure
-show(occgrid_unscaled)
+% show(occgrid_unscaled)
+show(map)
 hold on
 grid on
 
@@ -21,8 +23,8 @@ grid on
 % start = [2, 20];
 % goal = [41, 31];
 
-start = [2, 25];
-goal = [42, 6];
+start = [1, 1];
+goal = [12, 12];
 
 
 %% Jump Point Search
