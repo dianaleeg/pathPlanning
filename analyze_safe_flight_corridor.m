@@ -8,7 +8,8 @@ clc
 % grid on
 map = occgrid_unscaled;
 start = [35, 40];
-goal = [20, 25];
+% goal = [20, 25];
+goal = [5, 5];
 
 [occgrid, occgrid_unscaled]= loadMap('city_map.png', 50);
 figure
@@ -50,7 +51,7 @@ function elapsed_time = sfc(map, start, goal)
     end
     
 	[min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)
-    elapsed_time = start_time - end_time;
+    %elapsed_time = start_time - end_time;
     
 	plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
 end 
