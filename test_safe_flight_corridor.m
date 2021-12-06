@@ -35,6 +35,11 @@ plot(goal(1),goal(2),'r.','MarkerSize',15)
 drawnow
 
 %% Safe Flight Corridor
+
+figure
+show(occgrid_unscaled)
+hold on
+
 path_size = size(path);
 for i = 1:path_size(1)-1
     SF_poly = safe_flight_corridor(map, path(i,:), path(i+1,:))
