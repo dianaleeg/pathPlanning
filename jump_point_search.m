@@ -18,7 +18,7 @@ function [path, nodes_visited, nodes] = jump_point_search(grid, px, x, g, s, nod
             if ~isequal(path, null())
                 [tf, index]=ismember(g, path,'rows');
                 if tf
-                    path = [path; x];
+                    path = [x; path];
                     return
                 end 
             end
