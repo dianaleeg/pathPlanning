@@ -28,7 +28,7 @@ function [elapsed_time, nodes_visited, grid, min_path] = sfc(map, start, goal)
         SF_poly{i} = safe_flight_corridor(map, path(i,:), path(i+1,:));
     end
     
-	[min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)
+    [min_path, min_path_length] = SFC_trajGen(path(1,:), path(end,:), SF_poly)
     %elapsed_time = start_time - end_time;
     
 end 

@@ -231,7 +231,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
     intersection_list = tangentLinesIntersections(endpoints)        
     plot(intersection_list(:,1),intersection_list(:,2),'r.','MarkerSize',25)
     
-    filter_distance = 8;
+    filter_distance = 5;
     filter_increment = 1;
     continue_incrementing = true;
     quadrant_satisfied = zeros(1,4);

@@ -2,30 +2,21 @@ close all
 clear
 clc
 
-load exampleMaps.mat
-map = binaryOccupancyMap(simpleMap);
-% [occgrid, occgrid_unscaled]= loadMap('city_map_low_res.png', 50);
+[occgrid, occgrid_unscaled]= loadMap('city_map_low_res.png', 50);
 % figure
 % show(occgrid_unscaled)
 % grid on
-% map = occgrid_unscaled;
+map = occgrid_unscaled;
+start = [25, 30];
+goal = [7, 12];
 
 [occgrid, occgrid_unscaled]= loadMap('city_map.png', 50);
 figure
-% show(occgrid_unscaled)
-show(map)
+show(occgrid_unscaled)
 hold on
 grid on
-
 % start = [7, 7];
 % goal = [41, 31];
-
-% start = [2, 20];
-% goal = [41, 31];
-
-start = [1, 1];
-goal = [12, 12];
-
 
 %% Jump Point Search
 nodes = [];
@@ -43,7 +34,14 @@ plot(goal(1),goal(2),'r.','MarkerSize',15)
 drawnow
 
 %% Safe Flight Corridor
+
+path = [25,30;13,18;11,16;7,12];
+
 path_size = size(path);
 for i = 1:path_size(1)-1
-    SF_poly = safe_flight_corridor(map, path(i,:), path(i+1,:))
+    SF_poly{i} = safe_flight_corridor(map, path(i,:), path(i+1,:));
 end
+
+[min_path, min_path_length] = SFC_trajGen(path(1,:), path(end,:), SF_poly)
+%%
+plotSolvedPath(map, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_3.png')
