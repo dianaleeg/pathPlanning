@@ -18,25 +18,25 @@
 % end
 
 %% Test
-[scaled_grid, grid] = loadMap('city_map.png', 50);
+% [scaled_grid, grid] = loadMap('city_map.png', 50);
 
 % nodes = [25,30; 13,18; 11,16; 7,12]; % test nodes for debugging
 
-figure
-show(grid)
-hold on
-
-for i = 1:(size(nodes,1)-1)
-    p1 = nodes(i,:);
-    p2 = nodes(i+1,:);
-
-    SF_poly{i} = SFC(grid, p1,p2);
-    drawnow
-end
-
-[min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)
-
-plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
+% figure
+% show(grid)
+% hold on
+% 
+% for i = 1:(size(nodes,1)-1)
+%     p1 = nodes(i,:);
+%     p2 = nodes(i+1,:);
+% 
+%     SF_poly{i} = safe_flight_corridor(grid, p1,p2);
+%     drawnow
+% end
+% 
+% [min_path, min_path_length] = SFC_trajGen(nodes(1,:), nodes(end,:), SF_poly)
+% 
+% plotSolvedPath(grid, [], min_path, 'JPS/SFC - City Occupancy Grid with Path','/figures/JPS_SFC_city_path_2.png')
 
 function SF_poly = safe_flight_corridor(grid, p1,p2)
     %% Step 1: Set Bounding box
