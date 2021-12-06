@@ -1,5 +1,4 @@
-% The purpose of this code is to implement the Safe Flight Corridors and
-% Receding Horizon Path Planning Algorithm
+% The purpose of this code is to implement the Jump Point Seach and Safe Flight Corridors and Path Planning Algorithm
 % The authors of this code are: Christian Chang, Christopher Poole, Trevor Rizzo and Diana
 % Lee Guzman
 
@@ -17,6 +16,7 @@ clc
 % Parallel Computing Toolbox
 % Automated Driving Toolbox
 % Symbolic Math Toolbox
+% Mapping Toolbox
 
 % ensure figures folder exists
 if not(isfolder('figures'))

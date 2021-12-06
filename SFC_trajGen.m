@@ -16,7 +16,11 @@ end
 
 intersections = [];
 n = size(polys,2);
-indices = nchoosek(1:n,2);
+% indices = nchoosek(1:n,2);
+for i = 1:n-1
+   indices(i,:) = [i i+1]; 
+end
+
 num_intersection = 1;
 
 for i = 1:size(indices,1)
