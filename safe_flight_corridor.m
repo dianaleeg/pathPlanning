@@ -245,7 +245,7 @@ function SF_poly = safe_flight_corridor(grid, p1,p2)
             quadrant = ceil(4*(angle_from_mp/(2*pi)));
             
             % remove nearby nodes
-            purge_distance = 5;
+            purge_distance = 2;
             for j = 1:size(intersection_list,1)
                 len_to_current_node = dist(intersection_list(i,:),intersection_list(j,:));
                 
