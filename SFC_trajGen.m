@@ -4,7 +4,7 @@ function [min_path, min_path_length] = SFC_trajGen(start, goal, polys)
 figure
 hold on
 grid on
-title('SFC Trajectory Generation Example')
+title('SFC Trajectory Generation')
 xlabel('x')
 ylabel('y')
 plot(start(1),start(2),'r.')

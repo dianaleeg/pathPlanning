@@ -125,14 +125,14 @@ for i = 1:numRows
     clear treeRows
     
     [time_elapsed_rrt, pthObj, solnInfo] = rrt(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0], [goal_house(i,1) goal_house(i,2) 90]);   
-    mapName = ['RRT - House Occupancy Grid with Path For Iteration ' + num2str(i)];
+    mapName = ['RRT - House Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/rrt_house_path_', num2str(i), '.png'];
     time_elapsed_rrt_grid2(i,1) = time_elapsed_rrt(6);
     path_distance_rrt_grid2(i,1) = solnInfo.NumNodes;
     [treeRows, treeCols] = size(solnInfo.TreeData);
     nodes_visited_rrt_grid2(i,1) = treeRows;
     robustness_rrt_grid2(i,1) = solnInfo.IsPathFound;
-    plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj,mapName, mapPath);
+    plotSolvedPath(house_occgrid_unscaled,solnInfo,pthObj,mapName, mapPath);
     
         
     clear solnInfo
@@ -177,7 +177,7 @@ for i = 1:numRows
     end
     mapName = ['A* - House Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/a_star_house_path_', num2str(i), '.png'];
-    plotSolvedPath(city_occgrid_unscaled,solnInfo,pthObj, mapName, mapPath);
+    plotSolvedPath(house_occgrid_unscaled,solnInfo,pthObj, mapName, mapPath);
     
     clear solnInfo
     clear pthObj
@@ -187,6 +187,9 @@ for i = 1:numRows
     clear treeRows
     
     % JPS & SFC
+    figure
+    hold on
+    show(city_occgrid_unscaled)
     [elapsed_time, nodes_visited, grid, min_path, min_path_len] = sfc(inflated_city_occgrid,  [start_city(i,1) start_city(i,2)], [goal_city(i,1) goal_city(i,2)], timeout);
     time_elapsed_sfc_grid1(i,1) = elapsed_time(6);
     path_distance_sfc_grid1(i,1) = min_path_len;
@@ -198,7 +201,7 @@ for i = 1:numRows
     end
     mapName = ['SFC - City Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/sfc_city_path_',num2str(i), '.png'];
-    plotSolvedPath(grid,[], min_path, mapName, mapPath);
+    plotSolvedPath(city_occgrid_unscaled,[], min_path, mapName, mapPath);
     
     clear grid
     clear min_path
@@ -207,6 +210,9 @@ for i = 1:numRows
     clear elapsed_time
     clear min_path_len
     
+    figure
+    hold on
+    show(house_occgrid_unscaled)
     [elapsed_time, nodes_visited, grid, min_path, min_path_len] = sfc(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0] , [goal_house(i,1) goal_house(i,2) 90], timeout);
     time_elapsed_sfc_grid2(i,1) = time_elapsed(6);
     path_distance_sfc_grid2(i,1) = min_path_len;
@@ -218,15 +224,14 @@ for i = 1:numRows
     end
     mapName = ['SFC - House Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/sfc_house_path_', num2str(i), '.png'];
-    plotSolvedPath(grid,[], min_path, mapName, mapPath);
+    plotSolvedPath(house_occgrid_unscaled,[], min_path, mapName, mapPath);
     
-        clear grid
+    clear grid
     clear min_path
     clear mapName
     clear mapPath
     clear elapsed_time
     clear min_path_len
-
 end
 
 
