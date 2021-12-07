@@ -53,7 +53,7 @@ goal_city = [5,5; 5,5; 5,5];
 start_house = [35,20; 35,20; 35,20];
 goal_house = [5,5; 5,5; 5,5];
 
-iterations = [1;2;3];
+iterations = [1];
 [numRows, numCols] = size(iterations);
 
 %Time Elapsed astar
@@ -194,15 +194,14 @@ for i = 1:numRows
     time_elapsed_sfc_grid1(i,1) = elapsed_time(6);
     path_distance_sfc_grid1(i,1) = min_path_len;
     nodes_visited_sfc_grid1(i,1) = nodes_visited;
-    if(min_path_len > 0)
+    mapName = ['SFC - City Occupancy Grid with Path For Iteration ', num2str(i)];
+    mapPath = ['/figures/sfc_city_path_',num2str(i), '.png'];
+    if(~isempty(min_path))
         robustness_sfc_grid1(i,1) = 1;
+        plotSolvedPath(city_occgrid_unscaled,[], min_path, mapName, mapPath);
     else
         robustness_sfc_grid1(i,1) = 0;
     end
-    mapName = ['SFC - City Occupancy Grid with Path For Iteration ', num2str(i)];
-    mapPath = ['/figures/sfc_city_path_',num2str(i), '.png'];
-    plotSolvedPath(city_occgrid_unscaled,[], min_path, mapName, mapPath);
-    
     clear grid
     clear min_path
     clear mapName
@@ -213,19 +212,18 @@ for i = 1:numRows
     figure
     hold on
     show(house_occgrid_unscaled)
-    [elapsed_time, nodes_visited, grid, min_path, min_path_len] = sfc(inflated_house_occgrid, [start_house(i,1) start_house(i,2) 0] , [goal_house(i,1) goal_house(i,2) 90], timeout);
-    time_elapsed_sfc_grid2(i,1) = time_elapsed(6);
+    [elapsed_time, nodes_visited, grid, min_path, min_path_len] = sfc(inflated_house_occgrid, [start_house(i,1) start_house(i,2)] , [goal_house(i,1) goal_house(i,2)], timeout);
+    time_elapsed_sfc_grid2(i,1) = elapsed_time(6);
     path_distance_sfc_grid2(i,1) = min_path_len;
     nodes_visited_sfc_grid2(i,1) = nodes_visited;
-    if(min_path_len > 0)
-        robustness_sfc_grid2(i,1) = 1;
-    else
-        robustness_sfc_grid2(i,1) = 0;
-    end
     mapName = ['SFC - House Occupancy Grid with Path For Iteration ', num2str(i)];
     mapPath = ['/figures/sfc_house_path_', num2str(i), '.png'];
-    plotSolvedPath(house_occgrid_unscaled,[], min_path, mapName, mapPath);
-    
+    if(~isempty(min_path))
+        robustness_sfc_grid2(i,1) = 1;
+        plotSolvedPath(house_occgrid_unscaled,[], min_path, mapName, mapPath);
+    else
+        robustness_sfc_grid2(i,1) = 0; 
+    end
     clear grid
     clear min_path
     clear mapName
