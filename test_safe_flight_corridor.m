@@ -47,6 +47,7 @@ grid on
 nodes = [];
 nodes_visited = 0;
 
+hold off
 plot(start(1),start(2),'g.','MarkerSize',15)
 plot(goal(1),goal(2),'r.','MarkerSize',15)
 drawnow

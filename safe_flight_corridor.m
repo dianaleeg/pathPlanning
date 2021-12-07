@@ -42,7 +42,7 @@ function [SF_poly, timeout_occurred] = safe_flight_corridor(grid, p1,p2, start_t
 
     now = clock
     elapsed = now - start_time
-    if elapsed(6) > timeout
+    if elapsed(5) > timeout
         timeout_occurred = true;
         SF_poly = [];
         return
@@ -85,7 +85,7 @@ function [SF_poly, timeout_occurred] = safe_flight_corridor(grid, p1,p2, start_t
     
     now = clock
     elapsed = now - start_time
-    if elapsed(6) > timeout
+    if elapsed(5) > timeout
         SF_poly = [];
         timeout_occurred = true;
         return
@@ -261,7 +261,7 @@ function [SF_poly, timeout_occurred] = safe_flight_corridor(grid, p1,p2, start_t
     while (continue_incrementing == true)
         now = clock
         elapsed = now - start_time
-        if elapsed(6) > timeout
+        if elapsed(5) > timeout
             SF_poly = [];
             timeout_occurred = true;
             return

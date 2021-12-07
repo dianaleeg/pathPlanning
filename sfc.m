@@ -14,7 +14,7 @@ function [elapsed_time, nodes_visited, path, min_path, min_path_length, timeout_
     
     if(timeout_occurred)
         min_path=[];
-        min_path_len = 0;
+        min_path_length = 0;
         elapsed_time = clock - start_time;
         return
     end
@@ -35,7 +35,7 @@ function [elapsed_time, nodes_visited, path, min_path, min_path_length, timeout_
         [SF_poly{i}, timeout_occurred] = safe_flight_corridor(map, path(i,:), path(i+1,:), start_time, timeout);
         if(timeout_occurred)
             min_path=[];
-            min_path_len = 0;
+            min_path_length = 0;
             elapsed_time = clock - start_time;
             return
         end
@@ -43,10 +43,10 @@ function [elapsed_time, nodes_visited, path, min_path, min_path_length, timeout_
     
     now = clock;
     elapsed = now - start_time;
-    if elapsed(6) > timeout
+    if elapsed(5) > timeout
         timeout_occurred = true
         min_path=[];
-        min_path_len = 0;
+        min_path_length = 0;
         elapsed_time = clock - start_time;
         return
     end
