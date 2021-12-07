@@ -36,13 +36,12 @@ function [elapsed_time, nodes_visited, path, min_path, min_path_length, timeout_
         if(timeout_occurred)
             min_path=[];
             min_path_length = 0;
-            elapsed_time = clock - start_time;
+            elapsed_time = start_time - clock;
             return
         end
     end
     
-    now = clock;
-    elapsed = now - start_time;
+    elapsed = clock - start_time;
     if elapsed(5) > timeout
         timeout_occurred = true
         min_path=[];
@@ -52,6 +51,6 @@ function [elapsed_time, nodes_visited, path, min_path, min_path_length, timeout_
     end
     
     [min_path, min_path_length] = SFC_trajGen(path(1,:), path(end,:), SF_poly)
-    elapsed_time = start_time - end_time;
+    elapsed_time = clock - start_time;
     
 end 

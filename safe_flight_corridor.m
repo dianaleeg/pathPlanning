@@ -40,8 +40,7 @@
 
 function [SF_poly, timeout_occurred] = safe_flight_corridor(grid, p1,p2, start_time, timeout)
 
-    now = clock
-    elapsed = now - start_time
+    elapsed = clock - start_time
     if elapsed(5) > timeout
         timeout_occurred = true;
         SF_poly = [];
@@ -83,8 +82,7 @@ function [SF_poly, timeout_occurred] = safe_flight_corridor(grid, p1,p2, start_t
 
     endpoints = []; % Endpoints lines that create SFC polyhedron [x1_1, y1_1, x1_2, y1_2; ]
     
-    now = clock
-    elapsed = now - start_time
+    elapsed = clock - start_time
     if elapsed(5) > timeout
         SF_poly = [];
         timeout_occurred = true;
@@ -259,8 +257,8 @@ function [SF_poly, timeout_occurred] = safe_flight_corridor(grid, p1,p2, start_t
     purge = zeros(1,size(intersection_list,1));
 
     while (continue_incrementing == true)
-        now = clock
-        elapsed = now - start_time
+
+        elapsed = clock - start_time
         if elapsed(5) > timeout
             SF_poly = [];
             timeout_occurred = true;
