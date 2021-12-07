@@ -1,7 +1,6 @@
 function [path, nodes_visited, nodes, timeout_occurred ] = jump_point_search(grid, px, x, g, s, nodes_visited, nodes, start_time, timeout)
     
-    now = clock;
-    elapsed = now - start_time
+    elapsed = clock - start_time
     if elapsed(5) > timeout
         timeout_occurred = true;
         return
